@@ -1,0 +1,5 @@
+des(n1)     des(n2)       traitement
+2               +1          rota droite n1
+2               -1          gauche n2 droite n1
+-2              +1          droite n2 gauche n1
+-2              -1          gauche n1

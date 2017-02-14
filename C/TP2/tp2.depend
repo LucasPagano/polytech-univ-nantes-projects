@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1486727047 source:/comptes/etudiant/E144754R/C/TP2/main.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	"main.h"
+
+1486726678 /comptes/etudiant/E144754R/C/TP2/main.h
+
