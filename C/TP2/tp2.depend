@@ -7,3 +7,25 @@
 
 1486726678 /comptes/etudiant/E144754R/C/TP2/main.h
 
+1486853518 source:c:\users\lucas\desktop\cours\c\tp2\fonctions_tri.c
+	<stdio.h>
+	<stdlib.h>
+	"fonctions_tri.h"
+
+1486853597 c:\users\lucas\desktop\cours\c\tp2\fonctions_tri.h
+
+1486849253 source:c:\users\lucas\desktop\cours\c\tp2\fonctions_comparaison.c
+
+1486863363 source:c:\users\lucas\desktop\cours\c\tp2\main.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	"main.h"
+	"fonctions_tri.h"
+	"fonctions_comparaison.h"
+	<string.h>
+
+1486862708 c:\users\lucas\desktop\cours\c\tp2\main.h
+
+1486849281 c:\users\lucas\desktop\cours\c\tp2\fonctions_comparaison.h
+
