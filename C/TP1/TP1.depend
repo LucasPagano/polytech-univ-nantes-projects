@@ -1,9 +1,0 @@
-# depslib dependency file v1.0
-1486119980 source:/comptes/etudiant/E144754R/C/TP1/parseur.c
-	<stdio.h>
-	<stdlib.h>
-	<string.h>
-	"parseur.h"
-
-1486119580 /comptes/etudiant/E144754R/C/TP1/parseur.h
-
