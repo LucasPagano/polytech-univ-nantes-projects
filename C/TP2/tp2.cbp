@@ -31,6 +31,14 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="fonctions_comparaison.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fonctions_comparaison.h" />
+		<Unit filename="fonctions_tri.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fonctions_tri.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>

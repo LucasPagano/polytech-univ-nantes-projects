@@ -2,38 +2,58 @@
 #include <stdlib.h>
 #include <time.h>
 #include "main.h"
+#include "fonctions_tri.h"
+#include "fonctions_comparaison.h"
+#include <string.h>
 
 int main()
 {
     srand(time(NULL));
 
     int (*comp)(int, int) = inf; // définition de la fonction de comparaison
+    void (*tableau_de_fonctions[2])(int*, int, int (*comp)(int, int)) = {tri_rapide, tri_bulles};
+    int nombre_de_fonctions = 2;
 
-    int taille_tableau = 1000;
-    int* tab = malloc(sizeof(int)*taille_tableau);
+    int taille_tableau = 20000; // Taille des tableaux aléatoires
+    double* tableau_des_temps;
+    tableau_des_temps = malloc(sizeof(double)*nombre_de_fonctions);
 
-    initialisation(tab, taille_tableau); // On initialise le tableau
-    //afficherTableau(tab, taille_tableau);
+    testDesFonctions(tableau_de_fonctions, taille_tableau, nombre_de_fonctions, comp, tableau_des_temps);
 
-    clock_t start_t, end_t;
-    double total_t;
-    start_t = clock();
-    tri_rapide(tab, taille_tableau, comp); // On le trie
-    end_t = clock();
-    total_t = (double)(end_t - start_t) / CLOCKS_PER_SEC;
-    printf("Temps d'exécution: %f\n", total_t  );
-    //afficherTableau(tab, taille_tableau);
-
+    printf("Les temps d'execution :\n Pour le tri rapide : %f\n Pour le tri a bulles : %f\n", tableau_des_temps[0], tableau_des_temps[1]);
 
     return 0;
 }
 
+// Fonction qui teste les fonctions de tri
+void testDesFonctions(void (*tableau_de_fonctions[2])(int*, int, int (*comp)(int, int)), int taille_tableau, int nombre_de_fonctions, int (*comp)(int, int), double* tableau_des_temps)
+{
+
+    for (int j=0; j<nombre_de_fonctions; j++)
+    {
+        int *tab = initialisation(taille_tableau); // On initialise le tableau
+        clock_t start_t, end_t;
+        double total_t;
+        start_t = clock();
+        tableau_de_fonctions[j](tab, taille_tableau, comp);
+
+        end_t = clock();
+
+        total_t = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+        tableau_des_temps[j] = total_t;
+    }
+}
+
+
 // Initialise le tableau
-void initialisation(int* tab, int taille_tableau){
+int* initialisation(int taille_tableau){
+
+    int* tab = malloc(sizeof(int)*taille_tableau);
     for (int i=0;i<taille_tableau;i++)
     {
-        tab[i] = rand()%100;
+        tab[i] = rand()%taille_tableau;
     }
+    return tab;
 }
 
 // Affiche le tableau
@@ -47,120 +67,18 @@ void afficherTableau(int* tab, int taille_tableau)
     printf("]\n");
 }
 
-int testTri(int* tab, int taille_tableau, int (*comp)(int, int))
+// Teste si le tableau est trié
+int triValide(int* tab, int taille_tableau, int (*comp)(int, int))
 {
     int tri = 0;
     int cpt = 0;
+
     while (tri ==0 && cpt < taille_tableau -1)
     {
-        if ((comp(tab[cpt], tab[cpt+1])))
+        if (comp(tab[cpt], tab[cpt+1]))
             tri = 1;
         cpt++;
     }
     return tri;
-}
-
-
-void qsort_tab(int* tab, int premier, int dernier, int (*comp)(int, int))
-{
-    if (premier<dernier)
-    {
-        int pivot = premier;
-        pivot = partitionner(tab, premier, dernier, pivot, comp);
-        qsort_tab(tab, premier, pivot-1, comp);
-        qsort_tab(tab, pivot+1, dernier, comp);
-    }
-
-}
-
-int partitionner(int* tab, int premier, int dernier, int pivot, int (*comp)(int, int))
-{
-    swap_tab(&tab[pivot], &tab[dernier]);
-    int j = premier;
-    for (int i=premier; i<dernier; i++)
-    {
-
-        if (comp(tab[i],tab[dernier]))
-        {
-            swap_tab(&tab[i], &tab[j]);
-            j++;
-        }
-    }
-    swap_tab(&tab[j], &tab[dernier]);
-    return j;
-}
-
-void swap_tab(int* i, int* j)
-{
-    int temp = *i;
-    *i = *j;
-    *j = temp;
-
-}
-
-int inf(int a, int b)
-{
-    return a <= b;
-}
-
-int sup(int a, int b)
-{
-    return a >= b;
-}
-
-int pair_croissant(int a, int b)
-{
-    if (a%2 == 0 && b%2 == 0)
-        return a < b;
-    else if (a%2 == 0 && b%2 != 0)
-        return 1;
-    else if (a%2 == 1 && b%2 == 0)
-        return 0;
-    else
-        return a < b;
-}
-
-int impair_croissant(int a, int b)
-{
-    if (a%2 == 0 && b%2 == 0)
-        return a < b;
-    else if (a%2 == 0 && b%2 != 0)
-        return 0;
-    else if (a%2 == 1 && b%2 == 0)
-        return 1;
-    else
-        return a < b;
-}
-
-void tri_shell(int* tableau,int longueur, int (*comp)(int, int))
-{
-    int n, i, j, valeur;
-    n=0;
-    while(n<longueur)
-    {
-        n=3*n+1;
-    }
-    while(n!=0)
-    {
-        n=n/3;
-        for (i=n; i<longueur; i++)
-        {
-            valeur=tableau[i];
-            j=i;
-
-            while((j>(n-1)) && (comp(valeur,tableau[j-n])))
-            {
-                tableau[j]=tableau[j-n];
-                j=j-n;
-            }
-            tableau[j]=valeur;
-        }
-    }
-}
-
-// Sert simplement à avoir la même signature pour qsort_tab que les autres
-void tri_rapide(int* tableau,int longueur, int (*comp)(int, int))
-{
-    qsort_tab(tableau, 0, longueur-1, comp);
 }
 
