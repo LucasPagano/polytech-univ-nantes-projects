@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/comptes/etudiant/E144754R/My-awesome-projects/C/TP3/Liste.c
+stdlib.h
+-
+Liste.h
+/comptes/etudiant/E144754R/My-awesome-projects/C/TP3/Liste.h
+
+/comptes/etudiant/E144754R/My-awesome-projects/C/TP3/Liste.h
+
+/comptes/etudiant/E144754R/My-awesome-projects/C/TP3/main.c
+stdlib.h
+-
+stdio.h
+-
+Liste.h
+/comptes/etudiant/E144754R/My-awesome-projects/C/TP3/Liste.h
+
