@@ -71,7 +71,8 @@ SCell* AddElementAfter(SList *list,SCell *cell,Data elem)
     if(cell->next != NULL){
         newCell->next = cell->next;
         cell->next->previous = newCell;
-    }
+    } else
+        newCell->next = NULL;
 
     newCell->previous = cell;
     cell->next = newCell;
