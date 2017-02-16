@@ -31,4 +31,3 @@ int impair_croissant(int a, int b)
     else
         return a < b;
 }
-

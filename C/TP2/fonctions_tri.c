@@ -1,8 +1,8 @@
+#include "fonctions_tri.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "fonctions_tri.h"
 
-void tri_bulles(int* tableau,int longueur, int (*comp)(int, int))
+void tri_bulles(int* tableau,int longueur, Comp comp)
 {
      int i, inversion;
 
@@ -22,9 +22,7 @@ void tri_bulles(int* tableau,int longueur, int (*comp)(int, int))
      while(inversion);
 }
 
-
-// Sert simplement à avoir la même signature pour qsort_tab que les autres
-void tri_rapide(int* tableau,int longueur, int (*comp)(int, int))
+void tri_rapide(int* tableau,int longueur, Comp comp)
 {
     qsort_tab(tableau, 0, longueur-1, comp);
 }
@@ -41,7 +39,7 @@ void qsort_tab(int* tab, int premier, int dernier, int (*comp)(int, int))
 
 }
 
-int partitionner(int* tab, int premier, int dernier, int pivot, int (*comp)(int, int))
+int partitionner(int* tab, int premier, int dernier, int pivot, Comp comp)
 {
     swap_tab(&tab[pivot], &tab[dernier]);
     int j = premier;
@@ -56,6 +54,31 @@ int partitionner(int* tab, int premier, int dernier, int pivot, int (*comp)(int,
     }
     swap_tab(&tab[j], &tab[dernier]);
     return j;
+}
+
+void tri_insertion(int tab[], int taille, Comp comp)
+{
+   int i, j;
+   for (i = 1; i < taille; ++i) {
+       int elem = tab[i];
+       for (j = i; j > 0 && comp(elem,tab[j-1]); j--)
+           tab[j] = tab[j-1];
+       tab[j] = elem;
+   }
+}
+
+void tri_mr_anonyme(int *tab, int taille, Comp comp) {
+
+  for (int i = 0; i < taille; i++) {
+    int index = i;
+    for(int j = i+1; j < taille; j++) {
+      if (comp(tab[j],tab[index])) {
+        index = j;
+      }
+    }
+    swap_tab(&tab[i], &tab[index]);
+  }
+
 }
 
 void swap_tab(int* i, int* j)
