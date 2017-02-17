@@ -3,12 +3,6 @@
 //
 #include <stdlib.h>
 #include "Liste.h"
-#define TAILLE_TABLEAU 1
-#define NOMBRE_BACKUP 1 //TODO : trouver pourquoi 1 fonctionne pas
-
-// Fonctions privées
-SCell* getFirstFree(SList *list);
-
 
 struct SCell
 {
@@ -20,39 +14,13 @@ struct SCell
 struct SList
 {
     SCell *head;
-    int indexFreeCell;
-    SCell *array;
-    SCell **backup;
-    int indexLastBackup;
-    int nbBackup;
 };
 
 SList* CreateList(){
     SList *list;
     list = malloc(sizeof(SList));
     list->head = NULL;
-    list->indexFreeCell = 0;
-    list->indexLastBackup = 0;
-    list->array = malloc(sizeof(SCell)*TAILLE_TABLEAU);
-    list->backup = malloc(sizeof(SCell *)*NOMBRE_BACKUP);
-    list->backup[list->indexLastBackup] = list->array;
-    list->nbBackup = NOMBRE_BACKUP;
     return list;
-}
-
-SCell* getFirstFree(SList *list){
-  if (list->indexFreeCell >= TAILLE_TABLEAU-1){
-    if(list->indexLastBackup >= list->nbBackup){
-      list->backup = realloc(list->backup, sizeof(SCell) * NOMBRE_BACKUP);
-      list->nbBackup += NOMBRE_BACKUP;
-    }
-    list->array = malloc(sizeof(SCell)*TAILLE_TABLEAU);
-    list->backup[list->indexLastBackup] = list->array;
-    list->indexLastBackup += 1;
-    list->indexFreeCell = 0;
-    list->array = malloc(sizeof(SCell)*TAILLE_TABLEAU);
-  }
-  return list->array + list->indexFreeCell;
 }
 
 void DeleteList(SList *list)
@@ -71,17 +39,17 @@ void DeleteList(SList *list)
 
 SCell* AddElementBegin(SList *list, Data elem)
 {
-    SCell *newCell = getFirstFree(list);
-    list->indexFreeCell += 1;
-    newCell->value = elem;
-    newCell->next = list->head;
+    SCell *cell;
+    cell = malloc(sizeof(SCell));
+    cell->value = elem;
+    cell->next = list->head;
 
     if (list->head != NULL)
-        list->head->previous = newCell;
+        list->head->previous = cell;
 
-    list->head = newCell;
+    list->head = cell;
 
-    return newCell;
+    return cell;
 }
 
 SCell* AddElementEnd(SList *list,Data elem)
@@ -96,16 +64,15 @@ SCell* AddElementEnd(SList *list,Data elem)
 
 SCell* AddElementAfter(SList *list,SCell *cell,Data elem)
 {
-    SCell *newCell = getFirstFree(list);
-    list->indexFreeCell += 1;
+    SCell *newCell;
+    newCell = malloc(sizeof(SCell));
     newCell->value = elem;
 
     if(cell->next != NULL){
         newCell->next = cell->next;
         cell->next->previous = newCell;
-    } else {
+    } else
         newCell->next = NULL;
-    }
 
     newCell->previous = cell;
     cell->next = newCell;
@@ -120,6 +87,8 @@ void DeleteCell(SList *list, SCell *cell){
         cell->previous->next = cell->next;
     if (cell->next != NULL)
         cell->next->previous = cell->previous;
+
+    free(cell);
 }
 
 SCell* GetLastElement(SList *list) {
