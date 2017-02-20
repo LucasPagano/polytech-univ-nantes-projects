@@ -1,3 +1,0 @@
-/comptes/etudiant/E144754R/My-awesome-projects/C/TP3/cmake-build-debug/CMakeFiles/edit_cache.dir
-/comptes/etudiant/E144754R/My-awesome-projects/C/TP3/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/comptes/etudiant/E144754R/My-awesome-projects/C/TP3/cmake-build-debug/CMakeFiles/TP3.dir

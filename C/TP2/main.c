@@ -19,7 +19,7 @@ int main()
     tableau_de_fonctions[2] = &tri_insertion;
     tableau_de_fonctions[3] = &tri_mr_anonyme;
 
-    int taille_tableau = 10000; // Taille du tableau aléatoire
+    int taille_tableau = 20000; // Taille du tableau aléatoire
 
     testDesFonctions(tableau_de_fonctions, taille_tableau, nombre_de_fonctions, comp);
     return 0;
