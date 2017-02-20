@@ -24,14 +24,18 @@ int main()
 	PrintList(list);
 	printf("\n");
 
-	printf("Add 4 after 3\n");
+	printf("Add 4 after 3 (cell)\n");
 	AddElementAfter(list,cell,4);
 	PrintList(list);
 	printf("\n");
 
-	printf("Add 2 after first"
-                   "\n");
+	printf("Add 2 after first\n");
 	AddElementAfter(list,GetFirstElement(list),2);
+	PrintList(list);
+	printf("\n");
+
+	printf("Add 8 after last\n");
+	AddElementAfter(list,GetLastElement(list),8);
 	PrintList(list);
 	printf("\n");
 
@@ -40,7 +44,16 @@ int main()
 	PrintList(list);
 	printf("\n");
 
+
+	printf("Reutilisation adding 9 after end\n");
+	AddElementAfter(list,GetLastElement(list),9);
+	PrintList(list);
+	printf("\n");
+
+	printf("Delete list\n");
 	DeleteList(list);
+	PrintList(list);
+
 
 	return 0;
 }

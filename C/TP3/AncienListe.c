@@ -1,7 +1,5 @@
-//
-// Created by E144754R on 15/02/17.
-//
 #include <stdlib.h>
+#include <stdio.h>
 #include "Liste.h"
 
 struct SCell
@@ -39,17 +37,18 @@ void DeleteList(SList *list)
 
 SCell* AddElementBegin(SList *list, Data elem)
 {
-    SCell *cell;
-    cell = malloc(sizeof(SCell));
-    cell->value = elem;
-    cell->next = list->head;
+    SCell *newCell;
+    newCell = malloc(sizeof(SCell));
+    newCell->value = elem;
+    newCell->next = list->head;
 
     if (list->head != NULL)
-        list->head->previous = cell;
+        list->head->previous = newCell;
 
-    list->head = cell;
+    list->head = newCell;
 
-    return cell;
+
+    return newCell;
 }
 
 SCell* AddElementEnd(SList *list,Data elem)
@@ -71,8 +70,7 @@ SCell* AddElementAfter(SList *list,SCell *cell,Data elem)
     if(cell->next != NULL){
         newCell->next = cell->next;
         cell->next->previous = newCell;
-    } else
-        newCell->next = NULL;
+    }
 
     newCell->previous = cell;
     cell->next = newCell;

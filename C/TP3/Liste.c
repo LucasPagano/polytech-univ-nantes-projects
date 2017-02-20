@@ -1,6 +1,3 @@
-//
-// Created by E144754R on 15/02/17.
-//
 #include <stdlib.h>
 #include "Liste.h"
 #define TAILLE_TABLEAU 1
@@ -31,11 +28,15 @@ SList* CreateList(){
     SList *list;
     list = malloc(sizeof(SList));
     list->head = NULL;
+
     list->indexFreeCell = 0;
     list->indexLastBackup = 0;
-    list->array = malloc(sizeof(SCell)*TAILLE_TABLEAU);
-    list->backup = malloc(sizeof(SCell *)*NOMBRE_BACKUP);
-    list->backup[list->indexLastBackup] = list->array;
+
+    list->array = malloc(sizeof(SCell)*TAILLE_TABLEAU); //Tableau de SCell
+
+    list->backup = malloc(sizeof(SCell *)*NOMBRE_BACKUP); // Tableau possédant les pointeurs des tableaux de SCell
+    list->backup[list->indexLastBackup] = list->array; // Le premier pointeur est le premier tableau initialisé
+
     list->nbBackup = NOMBRE_BACKUP;
     return list;
 }
@@ -47,8 +48,8 @@ SCell* getFirstFree(SList *list){
       list->nbBackup += NOMBRE_BACKUP;
     }
     list->array = malloc(sizeof(SCell)*TAILLE_TABLEAU);
-    list->backup[list->indexLastBackup] = list->array;
     list->indexLastBackup += 1;
+    list->backup[list->indexLastBackup] = list->array;
     list->indexFreeCell = 0;
     list->array = malloc(sizeof(SCell)*TAILLE_TABLEAU);
   }
