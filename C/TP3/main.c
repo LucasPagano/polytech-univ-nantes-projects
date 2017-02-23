@@ -34,29 +34,18 @@ int main()
 	PrintList(list);
 	printf("\n");
 
-	printf("Add 8 after last\n");
-	AddElementAfter(list,GetLastElement(list),8);
-	PrintList(list);
-	printf("\n");
 
-	printf("Delete 3\n");
+	printf("Delete 3 (cell)\n");
 	DeleteCell(list,cell);
-	PrintList(list);
-	printf("\n");
-
-
-	printf("Reutilisation adding 9 after end\n");
-	AddElementAfter(list,GetLastElement(list),9);
 	PrintList(list);
 	printf("\n");
 
 	printf("Delete list\n");
 	DeleteList(list);
-	PrintList(list);
-
 
 	return 0;
 }
+
 
 
 void PrintList(SList *list)

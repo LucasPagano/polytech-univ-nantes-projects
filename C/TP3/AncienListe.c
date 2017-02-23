@@ -21,24 +21,48 @@ SList* CreateList(){
     return list;
 }
 
+// Création d'une cellule avec initialisation de ses pointeurs à NULL
+SCell* CreateCell(){
+    SCell *cell;
+    cell = malloc(sizeof(SCell));
+    cell->next = NULL;
+    cell->previous = NULL;
+    cell->value = 0;
+
+    return cell;
+}
+
 void DeleteList(SList *list)
 {
-    if (list->head !=  NULL)
+    while (list->head !=  NULL)
     {
-        SCell *tmp = list->head;
-        SCell *delete;
-        while (tmp->next != NULL) {
-            delete = tmp;
-            tmp = tmp->next;
-            free(delete);
-        }
+        DeleteCell(list, list->head);
     }
+    free(list);
+}
+
+void DeleteCell(SList *list, SCell *cell){
+    // Si la cellule est la tête de liste
+    if (cell == list->head){
+        // Si la cellule a un suivant, on change la tête de liste
+        if (cell->next != NULL){
+            list->head = cell->next;
+        // Si elle n'a pas de suivant, on met la tête de liste à NULL
+        } else {
+            list->head = NULL;
+        }
+    } else
+        cell->previous->next = cell->next;
+
+    if (cell->next != NULL)
+        cell->next->previous = cell->previous;
+
+    free(cell);
 }
 
 SCell* AddElementBegin(SList *list, Data elem)
 {
-    SCell *newCell;
-    newCell = malloc(sizeof(SCell));
+    SCell *newCell = CreateCell();
     newCell->value = elem;
     newCell->next = list->head;
 
@@ -63,8 +87,8 @@ SCell* AddElementEnd(SList *list,Data elem)
 
 SCell* AddElementAfter(SList *list,SCell *cell,Data elem)
 {
-    SCell *newCell;
-    newCell = malloc(sizeof(SCell));
+    SCell *newCell = CreateCell();
+
     newCell->value = elem;
 
     if(cell->next != NULL){
@@ -76,17 +100,6 @@ SCell* AddElementAfter(SList *list,SCell *cell,Data elem)
     cell->next = newCell;
     return newCell;
 
-}
-
-void DeleteCell(SList *list, SCell *cell){
-    if (cell == list->head)
-        list->head = cell->next;
-    else
-        cell->previous->next = cell->next;
-    if (cell->next != NULL)
-        cell->next->previous = cell->previous;
-
-    free(cell);
 }
 
 SCell* GetLastElement(SList *list) {
