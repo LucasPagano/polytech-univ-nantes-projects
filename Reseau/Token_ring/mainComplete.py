@@ -40,7 +40,12 @@ if __name__ == '__main__':
     __debugOut.setDebugLevelForLayer(4, __debugOut.INFO)
     __debugOut.setDebugLevelForLayer(5, __debugOut.INFO)
     __debugOut.setDebugLevelForLayer(6, __debugOut.INFO)
-    
+
+
+    # Changements globaux
+    networkStack = 0
+    delay = 0.1
+
     # This starts the graphical user interface
     # Computers (Nodes) are added automatically unless contained in ignoreComputers
     # The layerSelection determines the layers that are displayed graphically
@@ -61,36 +66,39 @@ if __name__ == '__main__':
 
     # We are initiating one computer
     __debugOut.debugOutSource("Main",__debugOut.srcComputer,__debugOut.INFO,"Instanciation computer 1")
-    computer1=Computer(ownIdentifier="A", masterHost=masterHostIp, baseport=10000,statusUpdateSeconds=10)
+    computer1=Computer(ownIdentifier="A", masterHost=masterHostIp, baseport=10000,statusUpdateSeconds=10, networkStackNumber=networkStack)
     # Get the global debug messages from the server for the graphical interface (this shall only be done for one computer)
     computer1.enableGlobalDebug()
     # Configure the delay in each layer and before sending the packet out of the computer (for debugging)
-    computer1.debugConfigureNetworkstackDelay(sendDelay=3,layerDelay=3)
+    computer1.debugConfigureNetworkstackDelay(sendDelay=delay,layerDelay=delay)
     
     __debugOut.debugOutSource("Main",__debugOut.srcComputer,__debugOut.INFO,"Instanciation computer 2")
-    computer2=Computer(ownIdentifier="B", masterHost=masterHostIp, baseport=10000,statusUpdateSeconds=10)
-    computer2.debugConfigureNetworkstackDelay(sendDelay=3,layerDelay=3)
+    computer2=Computer(ownIdentifier="B", masterHost=masterHostIp, baseport=10000,statusUpdateSeconds=10, networkStackNumber=networkStack)
+    computer2.debugConfigureNetworkstackDelay(sendDelay=delay,layerDelay=delay)
 
     # We may want to have a third computer somewhen
     # In this case, we may even use the alternative network stack (networkStackNumber=1) which may come in handy to combine two implementations in one trial
-    if False:
+
+    #Modifié pour ajouter un troisième pc
+    if True:
         __debugOut.debugOutSource("Main",__debugOut.srcComputer,__debugOut.INFO,"Instanciation computer 3")
-        if False:
-            computer3=Computer(ownIdentifier="C", masterHost=masterHostIp, baseport=10000, networkStackNumber=0)
-        else:
-            computer3=Computer(ownIdentifier="C", masterHost=masterHostIp, baseport=10000, networkStackNumber=1)
-        computer3.debugConfigureNetworkstackDelay(sendDelay=3,layerDelay=0)
+        computer3=Computer(ownIdentifier="C", masterHost=masterHostIp, baseport=10000, networkStackNumber=networkStack)
+        computer3.debugConfigureNetworkstackDelay(sendDelay=delay,layerDelay=delay)
+        __debugOut.debugOutSource("Main", __debugOut.srcComputer, __debugOut.INFO, "Starting some message from B to A")
+        computer3.appMessageSend(destinationIdentifier="B", numberOfMessages=5)
     
     # Waiting three seconds to allow for the connections on the PHY Layer
     time.sleep(3)
 
     # Start sending some messages from computer 'A' to computer 'B'
     __debugOut.debugOutSource("Main",__debugOut.srcComputer,__debugOut.INFO,"Starting some message from A to B")
-    computer1.appMessageSend(destinationIdentifier="B", numberOfMessages=5)
+    computer1.appMessageSend(destinationIdentifier="C", numberOfMessages=5)
     
     # Start sending some messages from computer 'B' to computer 'A'
     __debugOut.debugOutSource("Main",__debugOut.srcComputer,__debugOut.INFO,"Starting some message from B to A")
     computer2.appMessageSend(destinationIdentifier="A", numberOfMessages=5)
+
+
     
     time.sleep(2)
 

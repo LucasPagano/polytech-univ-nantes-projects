@@ -5,7 +5,7 @@ from Tools.DebugOut import DebugOut
 import time
 
 
-class NetworkStack(object):
+class NetworkStackAlternative(object):
     def __init__(self, masterHost='127.0.0.1', baseport=10000, ownIdentifier='x', autoEnter=True):
         self.__debugOut = DebugOut()
         self.__applicationList = []
