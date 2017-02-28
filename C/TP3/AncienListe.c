@@ -33,6 +33,7 @@ void DeleteList(SList *list)
             free(delete);
         }
     }
+    free(list);
 }
 
 SCell* AddElementBegin(SList *list, Data elem)
