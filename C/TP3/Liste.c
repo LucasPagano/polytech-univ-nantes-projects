@@ -51,7 +51,6 @@ SCell* getFirstFree(SList *list){
     list->indexLastBackup += 1;
     list->backup[list->indexLastBackup] = list->array;
     list->indexFreeCell = 0;
-    list->array = malloc(sizeof(SCell)*TAILLE_TABLEAU);
   }
   return list->array + list->indexFreeCell;
 }

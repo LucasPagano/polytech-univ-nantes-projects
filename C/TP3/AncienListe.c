@@ -32,10 +32,8 @@ SCell* CreateCell(){
     return cell;
 }
 
-void DeleteList(SList *list)
-{
-    while (list->head !=  NULL)
-    {
+void DeleteList(SList *list){
+    while (list->head !=  NULL){
         DeleteCell(list, list->head);
     }
     free(list);
@@ -60,8 +58,7 @@ void DeleteCell(SList *list, SCell *cell){
     free(cell);
 }
 
-SCell* AddElementBegin(SList *list, Data elem)
-{
+SCell* AddElementBegin(SList *list, Data elem){
     SCell *newCell = CreateCell();
     newCell->value = elem;
     newCell->next = list->head;
@@ -75,8 +72,7 @@ SCell* AddElementBegin(SList *list, Data elem)
     return newCell;
 }
 
-SCell* AddElementEnd(SList *list,Data elem)
-{
+SCell* AddElementEnd(SList *list,Data elem){
     if (list->head != NULL)
     {
         return AddElementAfter(list, GetLastElement(list), elem);
@@ -85,8 +81,7 @@ SCell* AddElementEnd(SList *list,Data elem)
     }
 }
 
-SCell* AddElementAfter(SList *list,SCell *cell,Data elem)
-{
+SCell* AddElementAfter(SList *list,SCell *cell,Data elem){
     SCell *newCell = CreateCell();
 
     newCell->value = elem;
@@ -102,7 +97,7 @@ SCell* AddElementAfter(SList *list,SCell *cell,Data elem)
 
 }
 
-SCell* GetLastElement(SList *list) {
+SCell* GetLastElement(SList *list){
     SCell *tmp = list->head;
     while (tmp->next != NULL) {
         tmp = tmp->next;
