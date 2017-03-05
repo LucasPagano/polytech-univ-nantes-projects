@@ -105,14 +105,16 @@ void DeleteList(SList *list){
         SCell *tmp = list->head;
         SCell *delete;
         while (tmp->next != NULL) {
-            printf("%i\n", tmp->value);
             delete = tmp;
             tmp = tmp->next;
+            printf("On delete la cell de value %d\n", delete->value);
             free(delete);
-            printf("%i\n", tmp->value);
-
         }
+        list->head = NULL;
+        PrintList(list);
+        free(tmp);
     }
+    free(list);
 }
 
 void DeleteCell(SList *list, SCell *cell){

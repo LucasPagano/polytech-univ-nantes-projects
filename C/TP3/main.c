@@ -11,6 +11,7 @@ int main()
 
 	list=CreateList();
 
+
 	printf("Add 5, 3, 1 at beginning\n");
 	AddElementBegin(list,5);
 	cell=AddElementBegin(list,3);
@@ -29,33 +30,26 @@ int main()
 	PrintList(list);
 	printf("\n");
 
-	for (int i=0;i<5;i++){
-	printf("Add %i after first\n", i);
-	AddElementAfter(list,GetFirstElement(list),i);
-	PrintList(list);
-	printf("\n");
-}
 
-	for (int i=0;i<5;i++){
-		printf("Delete head->next\n");
+	for (int i=0;i<3;i++){
+		printf("Delete head\n");
 		DeleteCell(list,GetFirstElement(list));
 		PrintList(list);
 		printf("\n");
 	}
 
+	for (int i=0;i<3;i++){
+		printf("Add %i after first\n", i);
+		AddElementAfter(list,GetFirstElement(list),i);
+		PrintList(list);
+		printf("\n");
+	}
 
-	for (int i=0;i<5;i++){
-	printf("Add %i after first\n", i);
-	AddElementAfter(list,GetFirstElement(list),i);
-	PrintList(list);
-	printf("\n");
-}
+	printf("Delete list\n");
+	DeleteList(list);
 
-	// printf("Delete list\n");
-	// DeleteList(list);
 	return 0;
 }
-
 
 
 void PrintList(SList *list)
