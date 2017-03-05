@@ -21,25 +21,45 @@ SList* CreateList(){
     return list;
 }
 
-void DeleteList(SList *list)
-{
-    if (list->head !=  NULL)
-    {
-        SCell *tmp = list->head;
-        SCell *delete;
-        while (tmp->next != NULL) {
-            delete = tmp;
-            tmp = tmp->next;
-            free(delete);
-        }
+// Création d'une cellule avec initialisation de ses pointeurs à NULL
+SCell* CreateCell(){
+    SCell *cell;
+    cell = malloc(sizeof(SCell));
+    cell->next = NULL;
+    cell->previous = NULL;
+    cell->value = 0;
+
+    return cell;
+}
+
+void DeleteList(SList *list){
+    while (list->head !=  NULL){
+        DeleteCell(list, list->head);
     }
     free(list);
 }
 
-SCell* AddElementBegin(SList *list, Data elem)
-{
-    SCell *newCell;
-    newCell = malloc(sizeof(SCell));
+void DeleteCell(SList *list, SCell *cell){
+    // Si la cellule est la tête de liste
+    if (cell == list->head){
+        // Si la cellule a un suivant, on change la tête de liste
+        if (cell->next != NULL){
+            list->head = cell->next;
+        // Si elle n'a pas de suivant, on met la tête de liste à NULL
+        } else {
+            list->head = NULL;
+        }
+    } else
+        cell->previous->next = cell->next;
+
+    if (cell->next != NULL)
+        cell->next->previous = cell->previous;
+
+    free(cell);
+}
+
+SCell* AddElementBegin(SList *list, Data elem){
+    SCell *newCell = CreateCell();
     newCell->value = elem;
     newCell->next = list->head;
 
@@ -52,8 +72,7 @@ SCell* AddElementBegin(SList *list, Data elem)
     return newCell;
 }
 
-SCell* AddElementEnd(SList *list,Data elem)
-{
+SCell* AddElementEnd(SList *list,Data elem){
     if (list->head != NULL)
     {
         return AddElementAfter(list, GetLastElement(list), elem);
@@ -62,10 +81,9 @@ SCell* AddElementEnd(SList *list,Data elem)
     }
 }
 
-SCell* AddElementAfter(SList *list,SCell *cell,Data elem)
-{
-    SCell *newCell;
-    newCell = malloc(sizeof(SCell));
+SCell* AddElementAfter(SList *list,SCell *cell,Data elem){
+    SCell *newCell = CreateCell();
+
     newCell->value = elem;
 
     if(cell->next != NULL){
@@ -79,18 +97,7 @@ SCell* AddElementAfter(SList *list,SCell *cell,Data elem)
 
 }
 
-void DeleteCell(SList *list, SCell *cell){
-    if (cell == list->head)
-        list->head = cell->next;
-    else
-        cell->previous->next = cell->next;
-    if (cell->next != NULL)
-        cell->next->previous = cell->previous;
-
-    free(cell);
-}
-
-SCell* GetLastElement(SList *list) {
+SCell* GetLastElement(SList *list){
     SCell *tmp = list->head;
     while (tmp->next != NULL) {
         tmp = tmp->next;

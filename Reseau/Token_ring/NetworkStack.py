@@ -16,6 +16,10 @@ class NetworkStack(object):
         self.__ownIdentifier=ownIdentifier
         self.outgoingPacketStack=[]
         self.outgoingPacketStackLock=threading.Lock()
+        self.maxMessages = 15 # L'indice du derneir message par paquet
+        self.nbMessages = 0 # Le nombre actuel de messages traité dans le paquet
+        self.paquet = bytearray([]) # Le paquet
+        self.aEcrit =  False
         
 
     def leaveNetwork(self):
@@ -51,8 +55,13 @@ class NetworkStack(object):
     # In fact, sending a TOKEN requires the creation of a new thread
     def initiateToken(self):
         self.__debugOut.debugOutLayer(self.__ownIdentifier,2,self.__debugOut.INFO,"Initiating TOKEN" )
-        tokenThread=threading.Thread(target=self.application_layer_outgoingPDU, args=(True,))
+        tokenThread=threading.Thread(target=self.tripletoken())
         tokenThread.start()
+
+
+    def tripletoken(self):
+        for i in range(0,self.maxMessages):
+            self.application_layer_outgoingPDU(True)
 
     # Please adapt if required : This is the top layer that usually sends the data to the application
     # If pdu is None, the packet is not valid
@@ -80,7 +89,7 @@ class NetworkStack(object):
     def application_layer_outgoingPDU(self, forceToken=False):
         time.sleep(self.__layerDelay)
         self.outgoingPacketStackLock.acquire()
-        if len(self.outgoingPacketStack)==0 or forceToken:
+        if len(self.outgoingPacketStack)==0 or forceToken or self.aEcrit:
             destination=""
             applicationPort = 20
             plein = 0
@@ -88,6 +97,7 @@ class NetworkStack(object):
         else:
             destination,applicationPort,sdu=self.outgoingPacketStack.pop()
             plein = 1
+            self.aEcrit = False
         self.outgoingPacketStackLock.release()
         pdu=applicationPort.to_bytes(1,byteorder="little",signed=False)+sdu.encode("UTF-8")
         self.__debugOut.debugOutLayer(self.__ownIdentifier,5,self.__debugOut.INFO,"%s: application_layer_out: sending (%s) " % (self.__ownIdentifier,pdu))
@@ -148,51 +158,85 @@ class NetworkStack(object):
             self.__debugOut.debugOutLayer(self.__ownIdentifier,3,self.__debugOut.INFO,"%s: Layer3_in: Packet not meant for me (%s) -> Layer3_out\n" % (self.__ownIdentifier, pdu))
             self.layer3_outgoingPDU(source, destination, ack,  pdu, 1)
 
-    # Please adapt
+
     def layer3_outgoingPDU(self, source, destination, ack, pdu, plein):
         time.sleep(self.__layerDelay)
-        # Here, we store the packet and wait until an empty token packet arrives
 
         # Ajout de l'émetteur et du destinataire
         pdu = source.encode('utf-8') + destination.encode('utf-8') + ack.to_bytes(1, byteorder="little", signed=False) + pdu
 
         self.__debugOut.debugOutLayer(self.__ownIdentifier,3,self.__debugOut.INFO,"%s: Layer3_out: Sending out (%s) via interface %d " % (self.__ownIdentifier, pdu, 0))
-        self.layer2_outgoingPDU(0, pdu, plein)
+        self.layer2bis_outgoingPDU(0, pdu, plein)
 
-    # Please adapt
-    def layer2_incomingPDU(self, interface, pdu):
+    # Traite si le paquet est plein
+    def layer2bis_incomingPDU(self, interface, pdu):
         time.sleep(self.__layerDelay)
-        self.__debugOut.debugOutLayer(self.__ownIdentifier,2,self.__debugOut.INFO,"%s: Layer2_in: Received (%s) on Interface %d " % (self.__ownIdentifier, pdu, interface))
-        if interface == 0 : # same ring
+        self.__debugOut.debugOutLayer(self.__ownIdentifier, 2, self.__debugOut.INFO,
+                                      "%s: Layer2_in: Received (%s) on Interface %d " % (
+                                      self.__ownIdentifier, pdu, interface))
 
+        jeton = int.from_bytes(pdu[0:1], byteorder="little", signed=False)
+        pdu = pdu[1:]
 
-            jeton = int.from_bytes(pdu[0:1], byteorder="little",signed=False)
-            pdu=pdu[1:]
+        # Le paquet est un jeton
+        if jeton == 0:
+            self.__debugOut.debugOutLayer(self.__ownIdentifier, 2, self.__debugOut.INFO,
+                                          "%s: Layer2_in: Le paquet est un jeton (%s) -> app_layer_out\n" % (
+                                          self.__ownIdentifier, pdu))
+            self.application_layer_outgoingPDU(False)
+        # Le paquet n'est pas un jeton
+        else:
+            self.__debugOut.debugOutLayer(self.__ownIdentifier, 2, self.__debugOut.INFO,
+                                          "%s: Layer2_in: Le paquet n'est pas un jeton (%s) -> layer3_in\n" % (
+                                          self.__ownIdentifier, pdu))
+            self.layer3_incomingPDU(interface, pdu)
 
-            # Le paquet est un jeton
-            if jeton == 0:
-                self.__debugOut.debugOutLayer(self.__ownIdentifier,2,self.__debugOut.INFO,"%s: Layer2_in: Le paquet est un jeton (%s) -> app_layer_out\n" % (self.__ownIdentifier, pdu))
-                self.application_layer_outgoingPDU(False)
-            # Le paquet n'est pas un jeton
-            else:
-                self.__debugOut.debugOutLayer(self.__ownIdentifier,2,self.__debugOut.INFO,"%s: Layer2_in: Le paquet n'est pas un jeton (%s) -> layer3_in\n" % (self.__ownIdentifier, pdu))
-                self.layer3_incomingPDU(interface,pdu)
-        else: # Another Ring, this is for routing, see later
-            pass
-
-    def layer2_outgoingPDU(self, interface, pdu, plein):
+    def layer2bis_outgoingPDU(self, interface, pdu, plein):
         time.sleep(self.__layerDelay)
 
         # Si le plein est à 1, on met le header à 1, signifiant que le paquet est plein.
         if plein == 1:
-            pdu = plein.to_bytes(1,byteorder="little",signed=False) + pdu
+            pdu = plein.to_bytes(1, byteorder="little", signed=False) + pdu
         # Sinon, on le met à 0 : le paquet est vide
         else:
             pdu = plein.to_bytes(1, byteorder="little", signed=False) + pdu
 
+        self.__debugOut.debugOutLayer(self.__ownIdentifier,2,self.__debugOut.INFO,"%s: Layer2bis_out: Sending out (%s) via interface %d " % (self.__ownIdentifier, pdu, 0))
 
-        self.__debugOut.debugOutLayer(self.__ownIdentifier,2,self.__debugOut.INFO,"%s: Layer2_out: Sending out (%s) via interface %d " % (self.__ownIdentifier, pdu, interface))
-        if self.__sendDelay!=0:
-            self.__debugOut.debugOutLayer(self.__ownIdentifier,2,self.__debugOut.INFO,"%s: Layer2_out: Sleeping for %ds" % (self.__ownIdentifier,self.__sendDelay))
-            time.sleep(self.__sendDelay)
-        self.__layerPhy.API_sendData(interface, pdu)
+        self.layer2_outgoingPDU(interface, pdu)
+
+
+
+    # Traite le multiplexage
+    def layer2_incomingPDU(self, interface, pdu):
+        for i in range(0,self.maxMessages):
+            # On decapsule la taille
+            size = int.from_bytes(pdu[0:2], byteorder="little", signed=False)
+            pdu = pdu[2:]
+            pduInc = pdu[:size]
+
+            pdu = pdu[size:]
+            self.layer2bis_incomingPDU(interface, pduInc)
+
+    def layer2_outgoingPDU(self, interface, pdu):
+
+        size = len(pdu)
+        pdu = size.to_bytes(2, byteorder="little", signed=False) + pdu
+        self.paquet += pdu
+        self.nbMessages += 1
+
+        # Si on a traité tous les messages
+        if self.nbMessages == self.maxMessages:
+            if self.__sendDelay != 0:
+                self.__debugOut.debugOutLayer(self.__ownIdentifier, 2, self.__debugOut.INFO,
+                                              "%s: Layer2_out: Sleeping for %ds" % (self.__ownIdentifier, self.__sendDelay))
+                time.sleep(self.__sendDelay)
+            self.__layerPhy.API_sendData(interface, self.paquet)
+            # On remet a 0 le paquet, le nombre de messages traités et on considère ne plus avoir écrit
+            self.paquet=bytearray([])
+            self.aEcrit = False
+            self.nbMessages = 0
+
+
+
+
