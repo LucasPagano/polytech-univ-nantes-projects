@@ -40,22 +40,23 @@ void DeleteList(SList *list){
 }
 
 void DeleteCell(SList *list, SCell *cell){
-    // Si la cellule est la tête de liste
-    if (cell == list->head){
-        // Si la cellule a un suivant, on change la tête de liste
-        if (cell->next != NULL){
-            list->head = cell->next;
-        // Si elle n'a pas de suivant, on met la tête de liste à NULL
-        } else {
-            list->head = NULL;
-        }
-    } else
-        cell->previous->next = cell->next;
+    if (cell){
+        // Si la cellule est la tête de liste
+        if (cell == list->head){
+            // Si la cellule a un suivant, on change la tête de liste
+            if (cell->next != NULL){
+                list->head = cell->next;
+            // Si elle n'a pas de suivant, on met la tête de liste à NULL
+            } else {
+                list->head = NULL;
+            }
+        } else
+            cell->previous->next = cell->next;
 
-    if (cell->next != NULL)
-        cell->next->previous = cell->previous;
-
-    free(cell);
+        if (cell->next != NULL)
+            cell->next->previous = cell->previous;
+        free(cell);
+    }
 }
 
 SCell* AddElementBegin(SList *list, Data elem){
@@ -85,14 +86,22 @@ SCell* AddElementAfter(SList *list,SCell *cell,Data elem){
     SCell *newCell = CreateCell();
 
     newCell->value = elem;
+    newCell->value = elem;
 
-    if(cell->next != NULL){
-        newCell->next = cell->next;
-        cell->next->previous = newCell;
+    if (cell != NULL){
+        if(cell->next != NULL){
+            newCell->next = cell->next;
+            cell->next->previous = newCell;
+
+        } else{
+            newCell->next = NULL;
+        }
+        newCell->previous = cell;
+        cell->next = newCell;
+    } else{
+        list->head = newCell;
+        newCell->next = NULL;
     }
-
-    newCell->previous = cell;
-    cell->next = newCell;
     return newCell;
 
 }
