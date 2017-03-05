@@ -1,11 +1,11 @@
 output: main.o Liste.o
-	gcc -Wall main.o Liste.o -o tp3;
+	gcc -g -std=c99 -Wall main.o Liste.o -o tp3;
 
 main.o: main.c
-	gcc -Wall -c main.c
+	gcc -g -std=c99 -Wall -c main.c
 
-Liste.o: PropreListe.c Liste.h
-	gcc -Wall -c PropreListe.c -o Liste.o
+Liste.o: SBlock.c Liste.h
+	gcc -g -std=c99 -Wall -c SBlock.c -o Liste.o
 
 clean:
 	rm *.o tp3
