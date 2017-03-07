@@ -7,7 +7,7 @@ enum Etats
     SEtatErreur,
     SEtatReussite
 };
-
 int parseur();
-char recup();
+char recup(FILE* pFile, char* str);
+char recup_entame(FILE* pFile, char* str, char c);
 void afficherStr(char* str);

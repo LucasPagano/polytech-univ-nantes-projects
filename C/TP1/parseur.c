@@ -2,14 +2,11 @@
 #include <stdlib.h>
 #include "parseur.h"
 #include <string.h>
-
 int main()
 {
     parseur();
     return 0;
 }
-
-
 int parseur()
 {
     enum Etats curEtat = SEtatDebut;
@@ -20,50 +17,49 @@ int parseur()
     char **pile = malloc(sizeof(char*)*100);
     int indice = 0; // indice de la pile
     // Ouverture du fichier
-    if ((pFile = fopen("fichier.html", "rt")))
+    if ((pFile = fopen("facile.txt", "rt")))
         {
-
         // Test en soi
         while(sortie != 0){
             switch(curEtat){
+            // Test de la première balise
             case SEtatDebut:
                 // On passe les éventuels espaces et sauts de ligne
                 do{
-                        c = fgetc(pFile);
+                    c = fgetc(pFile);
                 } while ((c == '\n') || (c == ' '));
-                if (c == '<'){
-                    curEtat = SEtat1;}
+                if (c == '<')
+                {
+                    c = fgetc(pFile);
+                    if (c >= 'A' && c <= 'z')
+                        curEtat = SEtat1;
+                    else
+                        curEtat = SEtatErreur;}
                 else
                     curEtat = SEtatErreur;
                 break;
-
             // On récupère le premier mot et on le stocke dans la pile
             case SEtat1:
                 pile[indice] = malloc(sizeof(char) * 20);
-                c = recup(pFile, pile[indice]);
+                c = recup_entame(pFile, pile[indice], c);
                 indice++;
                 curEtat = SEtat2;
                 break;
-
             // On passe tous les mots inutiles
             // On teste si c'est une balise fermante ou une autre ouvrante
             case SEtat2:
                 while (c != '<')
                     c = fgetc(pFile);
-
                 c = fgetc(pFile);
                 if (c == '/')
                     curEtat = SEtat3;
                 else if (c >= 'A' && c <= 'z')
                 {
-                    curEtat = SEtat1;
-                    fseek(pFile, -1, SEEK_CUR); // On revient un en arrière pour prendre le mot correctement
+                   curEtat = SEtat1;; // On recupere la balise, pas besoin de changer d'état
                 }
                 else
                     curEtat = SEtatErreur;
-
                 break;
-
             case SEtat3:
                 balise_fermante = malloc(sizeof(char) * 20);
                 c = recup(pFile, balise_fermante);
@@ -75,20 +71,17 @@ int parseur()
                         curEtat = SEtatReussite;
                     else
                         curEtat = SEtat2;
-
                 } else
                 {
                     curEtat = SEtatErreur;
                 }
-                free(balise_fermante);
+                balise_fermante = "";
                 break;
-
             // Etat de reussite
             case SEtatReussite:
                 printf("Le fichier est conforme ");
                 sortie = 0;
                 break;
-
             // Etat d'erreur
             case SEtatErreur:
                 printf("Le fichier n'est pas conforme");
@@ -100,7 +93,6 @@ int parseur()
     fclose(pFile);
     return 0;
 }
-
 // Recupere le premier mot de la balise et le stocke dans la pile
 char recup(FILE* pFile, char* str){
     char c;
@@ -113,7 +105,19 @@ char recup(FILE* pFile, char* str){
     str[cpt-1] = '\0';
     return c;
 }
-
+// Récupère le premier mot de la balise quand le premier caractère a déjà été lu, puis le stocke dans la pile
+char recup_entame(FILE* pFile, char* str, char c){
+    int cpt = 0;
+    str[cpt] = c;
+    cpt++;
+    do{
+        c=fgetc(pFile);
+        str[cpt] = c;
+        cpt++;
+    }while(c != ' ' && c != '>' && c != '/');
+    str[cpt-1] = '\0';
+    return c;
+}
 void afficherStr(char* str){
     for(int i=0; i<20 && str[i]!='\0'; i++){
         printf("%c",str[i]);
