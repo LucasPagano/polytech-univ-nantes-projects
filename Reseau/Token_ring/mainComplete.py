@@ -45,6 +45,9 @@ if __name__ == '__main__':
     # Changements globaux
     networkStack = 0
     delay = 1
+    pcTrois = True
+    mortPcTrois = True
+    dureeVie = 20
 
     # This starts the graphical user interface
     # Computers (Nodes) are added automatically unless contained in ignoreComputers
@@ -76,11 +79,8 @@ if __name__ == '__main__':
     computer2=Computer(ownIdentifier="B", masterHost=masterHostIp, baseport=10000,statusUpdateSeconds=10, networkStackNumber=networkStack)
     computer2.debugConfigureNetworkstackDelay(sendDelay=delay,layerDelay=delay)
 
-    # We may want to have a third computer somewhen
-    # In this case, we may even use the alternative network stack (networkStackNumber=1) which may come in handy to combine two implementations in one trial
-
-    #Modifié pour ajouter un troisième pc
-    if True:
+    #Modifié pour ajouter un troisième pc qui envoie des messages a A, ainsi,
+    if pcTrois:
         __debugOut.debugOutSource("Main",__debugOut.srcComputer,__debugOut.INFO,"Instanciation computer 3")
         computer3=Computer(ownIdentifier="C", masterHost=masterHostIp, baseport=10000, networkStackNumber=networkStack)
         computer3.debugConfigureNetworkstackDelay(sendDelay=delay,layerDelay=delay)
@@ -90,9 +90,9 @@ if __name__ == '__main__':
     # Waiting three seconds to allow for the connections on the PHY Layer
     time.sleep(3)
 
-    # Start sending some messages from computer 'A' to computer 'B'
-    __debugOut.debugOutSource("Main",__debugOut.srcComputer,__debugOut.INFO,"Starting some message from A to B")
-    computer1.appMessageSend(destinationIdentifier="C", numberOfMessages=5)
+    # S'il y a un troisième pc, on envoie de A à lui, sinon on envoie à B
+    __debugOut.debugOutSource("Main",__debugOut.srcComputer,__debugOut.INFO,"Starting some message from A to " + "C" if pcTrois else "B")
+    computer1.appMessageSend(destinationIdentifier="C" if pcTrois else "B", numberOfMessages=5)
     
     # Start sending some messages from computer 'B' to computer 'A'
     __debugOut.debugOutSource("Main",__debugOut.srcComputer,__debugOut.INFO,"Starting some message from B to A")
@@ -106,8 +106,8 @@ if __name__ == '__main__':
     computer1.initiateToken()
     print("Token sent")
     # We may want to have this third computer leave the network after some time
-    if False:
-        time.sleep(10)
+    if mortPcTrois and pcTrois:
+        time.sleep(dureeVie)
         computer3.stopComputer()
 
     if macosTkinterWorkaround:

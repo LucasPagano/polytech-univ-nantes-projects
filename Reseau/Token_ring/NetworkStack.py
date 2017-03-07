@@ -19,10 +19,15 @@ class NetworkStack(object):
         self.maxMessages = 3 # L'indice du dernier message par paquet
         self.nbMessages = 0 # Le nombre actuel de messages traité dans le paquet
         self.paquet = bytearray([]) # Le paquet
-        self.aEcrit =  False # Ne permet que d'écrire un message par ordinateur par paquet
+        self.aEcrit =  False # Permet que de n'écrire qu'un message par ordinateur par paquet
+        self.numberOfNodesPerRing = 4
+        self.enTraitement = False # Détermine si on traite le paquet
         
 
+    # On ne leave le réseau que si on ne travaille pas sur le paquet
     def leaveNetwork(self):
+        while self.enTraitement:
+            time.sleep(5)
         self.__layerPhy.API_leave()
         
     def enableGlobalDebug(self):
@@ -51,27 +56,21 @@ class NetworkStack(object):
 #############################################################################################################################################
 #############################################################################################################################################
 
-    # Please change: This sends the first TOKEN to the ring
-    # In fact, sending a TOKEN requires the creation of a new thread
     def initiateToken(self):
         self.__debugOut.debugOutLayer(self.__ownIdentifier,2,self.__debugOut.INFO,"Initiating TOKEN" )
-        tokenThread=threading.Thread(target=self.tripletoken())
+        tokenThread=threading.Thread(target=self.multipleToken())
         tokenThread.start()
 
-
-    def tripletoken(self):
+    # On utilise ceci pour remplir le paquet à l'initialisation
+    def multipleToken(self):
         for i in range(0,self.maxMessages):
             self.application_layer_outgoingPDU(True)
 
-    # Please adapt if required : This is the top layer that usually sends the data to the application
-    # If pdu is None, the packet is not valid
-    # forceToken determines that the return packet needs to be a TOKEN
-    def application_layer_incomingPDU(self, forceToken, source, pdu):
+    def application_layer_incomingPDU(self, applicationPort, source, pdu):
         time.sleep(self.__layerDelay)
         self.__debugOut.debugOutLayer(self.__ownIdentifier,5,self.__debugOut.INFO,"%s: application_layer_in: received (%s) " % (self.__ownIdentifier,pdu))
         if pdu!=None:
-            applicationPort=int.from_bytes(pdu[0:1],byteorder="little",signed=False)
-            sdu=pdu[1:]
+            sdu = pdu
             print("Le message est " + str(sdu.decode("utf-8")))
 
             # We deliver the SDU to the application that handles this message
@@ -80,15 +79,14 @@ class NetworkStack(object):
                     thisApplication(source, applicationPort, sdu.decode('UTF-8'))
 
         
-        # On ne replonge pas dans le réseau car on arrive ici seulement quand on reçoit un message
+        # On ne replonge pas dans le réseau car on arrive ici seulement pour transmettre le message à l'application
         # Ainsi, le paquet est déjà renvoyé en tant qu'accusé de réception dans la couche 3
         # self.application_layer_outgoingPDU(forceToken)
-                
 
-    # Please adapt if required: This is the top layer that retrieves one element from the application layer 
     def application_layer_outgoingPDU(self, forceToken=False):
         time.sleep(self.__layerDelay)
         self.outgoingPacketStackLock.acquire()
+        # Si on a déjà écrit, on envoie un Token, pour laisser écrire les autres et ne pas surcharger le paquet
         if len(self.outgoingPacketStack)==0 or forceToken or self.aEcrit:
             destination=""
             applicationPort = 20
@@ -97,11 +95,11 @@ class NetworkStack(object):
         else:
             destination,applicationPort,sdu=self.outgoingPacketStack.pop()
             plein = 1
-            self.aEcrit = False
+            self.aEcrit = True
         self.outgoingPacketStackLock.release()
-        pdu=applicationPort.to_bytes(1,byteorder="little",signed=False)+sdu.encode("UTF-8")
+        pdu=sdu.encode("UTF-8")
         self.__debugOut.debugOutLayer(self.__ownIdentifier,5,self.__debugOut.INFO,"%s: application_layer_out: sending (%s) " % (self.__ownIdentifier,pdu))
-        self.layer4_outgoingPDU(destination, pdu, plein)
+        self.layer4_outgoingPDU(applicationPort, destination, pdu, plein)
 
         
     # Please adapt!
@@ -110,32 +108,34 @@ class NetworkStack(object):
     # is asked to handle the traffic
     def layer4_incomingPDU(self, source, pdu):
         time.sleep(self.__layerDelay)
-        # Let us assume that this is the layer where we determine the applicationPort
-        # We also decide whether we can send immediately send a new packet or whether we need to be friendly and send a TOKEN
-        # We are not friendly and send a packet if our application has one with 100% chance
+        applicationPort = int.from_bytes(pdu[0:1], byteorder="little", signed=False)
+        sdu = pdu[1:]
         self.__debugOut.debugOutLayer(self.__ownIdentifier,4,self.__debugOut.INFO,"%s: Layer4_in: Received (%s) from %s " % (self.__ownIdentifier,pdu, source))
-        self.application_layer_incomingPDU(False,source,pdu)
+        self.application_layer_incomingPDU(applicationPort, source, sdu)
 
     # Please adapt
-    def layer4_outgoingPDU(self, destination, pdu, plein):
+    def layer4_outgoingPDU(self, applicationPort, destination, pdu, plein):
         time.sleep(self.__layerDelay)
-        # Nous sommes le destinataire du message, on envoie notre ID en source
+        pdu = applicationPort.to_bytes(1, byteorder="little", signed=False) + pdu
         self.__debugOut.debugOutLayer(self.__ownIdentifier,4,self.__debugOut.INFO,"%s: Layer4_out: Sending (%s) to %s " % (self.__ownIdentifier, pdu, destination))
-        self.layer3_outgoingPDU(self.__ownIdentifier, destination, 0, pdu, plein)
+        # Nous sommes le destinataire du message, on envoie notre ID en source
+        self.layer3_outgoingPDU(self.__ownIdentifier, destination, 0, pdu, 0, plein)
 
-   #Couche qui détermine l'emetteur, le destinataire et si le paquet est un accusé de réception
+   #Couche qui détermine l'emetteur, le destinataire, si le paquet est un accusé de réception et le timeout
     def layer3_incomingPDU(self, interface, pdu):
         time.sleep(self.__layerDelay)
 
 
         # On montre bien qu'à chaque fois on tronque le paquet
-        # On utilise [0:1] au lieu de [0] pour bypass une erreur sur decode
         source = pdu[0:1].decode('utf-8')
         pdu = pdu[1:]
         destination = pdu[0:1].decode('utf-8')
         pdu = pdu[1:]
         ack = int.from_bytes(pdu[0:1], byteorder="little",signed=False)
         pdu = pdu[1:]
+        # Le timeout, gère si un pc se déconnecte du réseau en nombre de sauts
+        timeToLive = int.from_bytes(pdu[0:1], byteorder="little",signed=False)
+        sdu = pdu[1:]
 
         self.__debugOut.debugOutLayer(self.__ownIdentifier,3,self.__debugOut.INFO,"%s: Layer3_in: Received (%s) on interface %d " % (self.__ownIdentifier, pdu, interface))
 
@@ -143,27 +143,38 @@ class NetworkStack(object):
         if destination == self.__ownIdentifier:
             self.__debugOut.debugOutLayer(self.__ownIdentifier, 3, self.__debugOut.INFO,
                                           "%s: Layer3_in: Packet meant for me(%s) -> Layer4_in\n" % (
-                                              self.__ownIdentifier, pdu))
+                                              self.__ownIdentifier, sdu))
             # Ce n'est pas un accusé de reception
             if ack == 0:
-                self.layer4_incomingPDU(source, pdu)
-                self.layer3_outgoingPDU(destination, source, 1, pdu, 1)
+                self.layer4_incomingPDU(source, sdu)
+                # ack = 1, timetolive = 0, plein = 1
+                self.layer3_outgoingPDU(destination, source, 1, sdu, 0, 1)
             # C'est un accusé de réception, on force un token pour être gentil
             else:
                     self.application_layer_outgoingPDU(True)
 
         # Je ne suis pas le destinataire du message
         else:
-             # On le renvoie tel quel et il est toujours plein
-            self.__debugOut.debugOutLayer(self.__ownIdentifier,3,self.__debugOut.INFO,"%s: Layer3_in: Packet not meant for me (%s) -> Layer3_out\n" % (self.__ownIdentifier, pdu))
-            self.layer3_outgoingPDU(source, destination, ack,  pdu, 1)
+            if timeToLive < self.numberOfNodesPerRing and self.__ownIdentifier != source:
+                timeToLive += 1
+                # On le renvoie tel quel et il est toujours plein
+                self.__debugOut.debugOutLayer(self.__ownIdentifier,3,self.__debugOut.INFO,"%s: Layer3_in: Packet not meant for me (%s) -> Layer3_out\n" % (self.__ownIdentifier, pdu))
+                self.layer3_outgoingPDU(source, destination, ack,  sdu, timeToLive, 1)
+            else:
+                # La durée de vie du message a expiré, on réécrit dedans
+                self.__debugOut.debugOutLayer(self.__ownIdentifier,3,self.__debugOut.INFO,"%s: Layer3_in: Packet timeout (%s) -> Layer3_out\n" % (self.__ownIdentifier, pdu))
+                self.application_layer_outgoingPDU(False)
 
 
-    def layer3_outgoingPDU(self, source, destination, ack, pdu, plein):
+    def layer3_outgoingPDU(self, source, destination, ack, pdu, timeToLive, plein):
         time.sleep(self.__layerDelay)
 
-        # Ajout de l'émetteur et du destinataire
-        pdu = source.encode('utf-8') + destination.encode('utf-8') + ack.to_bytes(1, byteorder="little", signed=False) + pdu
+        # Ajout de l'émetteur du destinataire, de l'ack et du temps à vivre
+        pdu = source.encode('utf-8') + \
+              destination.encode('utf-8') +\
+              ack.to_bytes(1, byteorder="little", signed=False) + \
+              timeToLive.to_bytes(1, byteorder="little", signed=False) + \
+              pdu
 
         self.__debugOut.debugOutLayer(self.__ownIdentifier,3,self.__debugOut.INFO,"%s: Layer3_out: Sending out (%s) via interface %d " % (self.__ownIdentifier, pdu, 0))
         self.layer2bis_outgoingPDU(0, pdu, plein)
@@ -209,6 +220,7 @@ class NetworkStack(object):
 
     # Traite le multiplexage
     def layer2_incomingPDU(self, interface, pdu):
+        self.enTraitement = True
         for i in range(0,self.maxMessages):
             # On decapsule la taille du paquet
             size = int.from_bytes(pdu[0:2], byteorder="little", signed=False)
@@ -237,7 +249,6 @@ class NetworkStack(object):
             self.paquet=bytearray([])
             self.aEcrit = False
             self.nbMessages = 0
-
-
+            self.enTraitement = False
 
 
