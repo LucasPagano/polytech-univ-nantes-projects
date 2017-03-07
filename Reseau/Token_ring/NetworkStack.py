@@ -16,10 +16,10 @@ class NetworkStack(object):
         self.__ownIdentifier=ownIdentifier
         self.outgoingPacketStack=[]
         self.outgoingPacketStackLock=threading.Lock()
-        self.maxMessages = 15 # L'indice du derneir message par paquet
+        self.maxMessages = 3 # L'indice du dernier message par paquet
         self.nbMessages = 0 # Le nombre actuel de messages traité dans le paquet
         self.paquet = bytearray([]) # Le paquet
-        self.aEcrit =  False
+        self.aEcrit =  False # Ne permet que d'écrire un message par ordinateur par paquet
         
 
     def leaveNetwork(self):
@@ -210,9 +210,10 @@ class NetworkStack(object):
     # Traite le multiplexage
     def layer2_incomingPDU(self, interface, pdu):
         for i in range(0,self.maxMessages):
-            # On decapsule la taille
+            # On decapsule la taille du paquet
             size = int.from_bytes(pdu[0:2], byteorder="little", signed=False)
             pdu = pdu[2:]
+            # Un des "fragments" du paquet
             pduInc = pdu[:size]
 
             pdu = pdu[size:]

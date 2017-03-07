@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     # Changements globaux
     networkStack = 0
-    delay = 0.1
+    delay = 1
 
     # This starts the graphical user interface
     # Computers (Nodes) are added automatically unless contained in ignoreComputers
