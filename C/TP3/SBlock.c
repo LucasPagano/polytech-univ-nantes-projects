@@ -1,8 +1,8 @@
 #include <stdlib.h>
-#include "Liste.h"
 #include <stdio.h>
+#include "SBlock.h"
 
-#define BLOCK_SIZE 5
+#define BLOCK_SIZE 500
 
 typedef struct SBlock SBlock;
 
@@ -49,7 +49,8 @@ SBlock* createBlock(){
 SCell* getCell(SList *list){
     if (list->deletedCells != NULL){
         SCell* cell = list->deletedCells;
-        printf("On réutilise la cellule qui avait la valeur %d\n", cell->value);
+        // Décommenter la ligne suivante si on veut montrer le fonctionnement de la pile
+        //printf("On réutilise la cellule qui avait la valeur %d\n", cell->value);
         list->deletedCells = list->deletedCells->next;
         return cell;
     }

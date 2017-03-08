@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "Liste.h"
+#include "AncienListe.h"
 
 struct SCell
 {
@@ -14,7 +14,7 @@ struct SList
     SCell *head;
 };
 
-SList* CreateList(){
+SList* AncienCreateList(){
     SList *list;
     list = malloc(sizeof(SList));
     list->head = NULL;
@@ -22,7 +22,7 @@ SList* CreateList(){
 }
 
 // Création d'une cellule avec initialisation de ses pointeurs à NULL
-SCell* CreateCell(){
+SCell* AncienCreateCell(){
     SCell *cell;
     cell = malloc(sizeof(SCell));
     cell->next = NULL;
@@ -32,14 +32,14 @@ SCell* CreateCell(){
     return cell;
 }
 
-void DeleteList(SList *list){
+void AncienDeleteList(SList *list){
     while (list->head !=  NULL){
-        DeleteCell(list, list->head);
+        AncienDeleteCell(list, list->head);
     }
     free(list);
 }
 
-void DeleteCell(SList *list, SCell *cell){
+void AncienDeleteCell(SList *list, SCell *cell){
     if (cell){
         // Si la cellule est la tête de liste
         if (cell == list->head){
@@ -59,8 +59,8 @@ void DeleteCell(SList *list, SCell *cell){
     }
 }
 
-SCell* AddElementBegin(SList *list, Data elem){
-    SCell *newCell = CreateCell();
+SCell* AncienAddElementBegin(SList *list, Data elem){
+    SCell *newCell = AncienCreateCell();
     newCell->value = elem;
     newCell->next = list->head;
 
@@ -73,17 +73,17 @@ SCell* AddElementBegin(SList *list, Data elem){
     return newCell;
 }
 
-SCell* AddElementEnd(SList *list,Data elem){
+SCell* AncienAddElementEnd(SList *list,Data elem){
     if (list->head != NULL)
     {
-        return AddElementAfter(list, GetLastElement(list), elem);
+        return AncienAddElementAfter(list, AncienGetLastElement(list), elem);
     } else {
-        return AddElementBegin(list, elem);
+        return AncienAddElementBegin(list, elem);
     }
 }
 
-SCell* AddElementAfter(SList *list,SCell *cell,Data elem){
-    SCell *newCell = CreateCell();
+SCell* AncienAddElementAfter(SList *list,SCell *cell,Data elem){
+    SCell *newCell = AncienCreateCell();
 
     newCell->value = elem;
     newCell->value = elem;
@@ -106,7 +106,7 @@ SCell* AddElementAfter(SList *list,SCell *cell,Data elem){
 
 }
 
-SCell* GetLastElement(SList *list){
+SCell* AncienGetLastElement(SList *list){
     SCell *tmp = list->head;
     while (tmp->next != NULL) {
         tmp = tmp->next;
@@ -115,18 +115,18 @@ SCell* GetLastElement(SList *list){
     return tmp;
 }
 
-SCell* GetPrevElement(SCell *cell){
+SCell* AncienGetPrevElement(SCell *cell){
     return cell->previous;
 }
 
-SCell* GetFirstElement(SList *list){
+SCell* AncienGetFirstElement(SList *list){
     return list->head;
 }
 
-SCell* GetNextElement(SCell *cell){
+SCell* AncienGetNextElement(SCell *cell){
     return cell->next;
 }
 
-Data GetData(SCell *cell){
+Data AncienGetData(SCell *cell){
     return cell->value;
 }
