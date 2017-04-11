@@ -1,0 +1,153 @@
+**********************************
+TP 5 - Moniteurs et s?maphores de comptage en pthread
+
+Partie 1 : S?maphores de comptage
+
+Dur?e: 1h30
+
+**********************************
+
+
+
+
+**********************************
+Contenu:
+
+* Pseudo code de 2 processus avec s?maphore et EM:
+PrincipeEM.readme
+
+* Les fichiers d'impl?mentation des s?maphores de comptage par moniteurs pthreads :
+semaphore-moniteur.h
+semaphore-moniteur.c
+
+
+* Le fichier de test de l'exclusion mutuelle avec semaphore de comptage:
+testsem_thread.c
+
+* Le fichiers de test de l'alternance (ping pong) avec semaphores de comptage:
+ping-pong-sem-thread.c
+
+
+* Les fichiers d'implementation d'un utilitaire tprinf et tfprintf
+printf prefixe par "seconds:microsecondes:pid:tid "), a utiliser pour dater tous les messages
+tprinf.h
+tprinf.c
+
+
+macros-thread.h	: n fichier d'utiliaires (macros C) bien pratiques pour simplifier l'utilisation 
+		des mutex et des conditions pthread
+
+makefile : le fichier de construction automatique
+	make all : construit touts les executables
+	make clean : efface tous les fichiers compiles
+
+
+*************************************
+Enonce du TP:
+
+1) Preparation du programme de principe
+
+Lire le programme en pseudo code contenu dans le fichier "PrincipeEM.readme".
+
+A l'aide de l'outil JPNS, construisez le r?seau de p?tri correspondant et validez par simulation.
+
+
+
+2) Prise en maine de l'API C "pthreads"
+
+Ouvrir le fichier "testsem_thread.c" qui impl?mente en pthread l'?quivalent du pseudo code pr?c?dent.
+
+Analysez ce programme et expliquez les parties du code li?es ? l'API pthreads:
+#include <pthread.h>
+pthread_create()
+pthread_join()
+pthread_exit()
+
+Analysez le contenu du fichier "Makefile"
+
+Compilez le programme "testsem_thread.c" et v?rifiez qu'il disfonctionne faute de mise en place d'une synchronisation entre threads.
+
+
+
+3) Impl?mentation de d'un s?maphore de comptage ? l'aide des moniteurs pthreads
+
+Analysez le contenu des fichiers "semaphore-moniteur.h" et "semaphore-moniteur.c"
+
+Etudiez les outils mutex et condition de la biblioth?que pthread:
+pthread_mutex_init(), pthread_mutex_lock(), pthread_mutex_unlock(), pthread_mutex_destroy()
+pthread_cond_init(), pthread_cond_lock(), pthread_cond_wait(), pthread_cond_signal()
+
+Implementez le semaphore de comptage par moniteur dans le fichier "semaphore-moniteur.c"
+A l'aide vos notes de cours, de la biblioth?que pthread (thtreads, mutex, conditions), et du manuel en ligne.
+Pour cela, vous pourrez utiliser les macros C du fichier "macros-treads.h"
+
+
+
+4) Synchronisation de "testsem_thread.c"
+
+Testez votre impl?mentation des s?maphores de comptage sur l'exemple d'utilisation de semaphore pour l'exclusion mutuelle propos? dans "testsem_thread.c".
+
+Verifiez avec des commandes systeme quels sont les processus crees et leurs etats (ex: "ps -aLm")
+
+Essayez d'utiliser un environnment de deverminage supportant le parallelisme des threads (gbd, ddd ou autre debogueur graphique)
+
+Essayer diff?rentes configurations en variant l'initialisation du semaphore (0,1,2,3), et en creant plus de 2 threads.
+
+
+
+
+Question facultative, s'il vous reste du temps. Sinon ? traiter comme exercice  hors s?ance de TP.
+5) Alternance de 2 types de processus
+
+Transformez le programme "testsem.c" pr?c?dent pour impl?menter un jeux de ping-pong entre 2 processus legers "ping-pong-sem-thread.c"
+produisant le r?sultat: PING, PONG, PING, PONG, PING, PONG, ...
+
+A l'aide de l'outil JPNS, construisez les r?seaux de p?tri correspondant,
+ et validez-les par simulation.
+
+
+
+
+
+*************************************
+ANNEXES
+*************************************
+1) D?boguer les pthreads avec gdb
+
+Pour pouvoir controller les threads ind?pendamment, il suffit d'entrer la s?quence de commandes suivante dans gdb:
+
+# Enable the async interface.
+set target-async 1
+# If using the CLI, pagination breaks non-stop.
+set pagination off
+# Finally, turn it on!
+set non-stop on
+Pour les d?tails, voir: https://sourceware.org/gdb/current/onlinedocs/gdb/Non_002dStop-Mode.html
+
+
+2) Pour deboguer les pthreads en linux dans netbeans.
+
+Ceci peut ?tre fait dans netbeans 7.0.
+Pour installer c/c++ dans netbeans, suivre les ?tapes suivantes: 
+- menu "tools/plugins" 
+- dans settings parametrer le proxy "proxy settings" cache.etu.univ-nantes.fr:3128 
+- dans settings, activez les sources "Certified Plugins, Netbeans Distribution, et Plugin Portal
+- dans "available plugins" rafraichir le catalogue (update ou refresh), puis installer c/c++
+
+Il faut aussi mettre ? jour netbeans:
+- dans "update" rafraichir le catalogue (update ou refresh), puis bouton update
+
+La console gdb est accessible dans menu:  "window/debugging/debugger console"
+
+La fen?tre de contr?le des threads dans : "window/debugging/threads"
+
+Entrer les commandes de la 1ere partie dans le fichier ~/.gdbinit pour qu'elles soient prises en compte automatiquement.
+
+
+3) Tutoriel d?bogueur gdb
+voir https://doc.ubuntu-fr.org/gdb
+
+
+
+
+

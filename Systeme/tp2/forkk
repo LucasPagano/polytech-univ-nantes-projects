@@ -1,7 +1,0 @@
-#include <stdlib.h>
-
-int main(){
-    int pid = fork();
-    if (pid == 0) printf("Coucou je suis le fils et mon pid est %i", getpid());
-    else printf("Coucou je suis le père et mon pid est %i", pid);
-}

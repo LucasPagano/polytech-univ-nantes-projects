@@ -1,0 +1,12 @@
+package liste_chainee;
+
+public abstract class Liste {
+	abstract int longueur();
+	abstract boolean find(int n);
+	abstract int max();
+
+	@Override
+	public String toString(){
+		return "Liste contenant " + this.longueur() + " éléments";
+	}
+}

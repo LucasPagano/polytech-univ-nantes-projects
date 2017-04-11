@@ -1,0 +1,25 @@
+package Freemium;
+
+import S3_FREEMIUM.CarteBancaire;
+
+public class Premium extends Utilisateur {
+	
+	protected CarteBancaire cb;
+	
+	protected static final int montant = 10;
+	
+	public Premium(String nom, int numero, int date, int pictogramme){
+		super(nom);
+		this.cb = new CarteBancaire(numero, date, pictogramme);
+	}
+
+	protected boolean droit() {
+		return true;
+	}
+
+	@Override
+	public void updateMonthly() {
+		cb.paye(montant);
+	}
+	
+}

@@ -1,2 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy/>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="java.lang.reflect.Field"/>
+<fullyQualifiedTypeName name="liste_chainee.Cellule"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="S3_FREEMIUM.BanqueMusique"/>
+<fullyQualifiedTypeName name="java.util.UUID"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="java.lang.Runnable"/>
+<fullyQualifiedTypeName name="java.lang.Thread"/>
+<fullyQualifiedTypeName name="Freemium.Utilisateur"/>
+<fullyQualifiedTypeName name="java.lang.System"/>
+<fullyQualifiedTypeName name="Freemium.SytemeFreemiumStreaming"/>
+<fullyQualifiedTypeName name="Freemium.users.Utilisateur"/>
+<fullyQualifiedTypeName name="Freemium.users.Premium"/>
+<fullyQualifiedTypeName name="Freemium.users.Free"/>
+<fullyQualifiedTypeName name="Freemium.users.Personne"/>
+<fullyQualifiedTypeName name="java.lang.Exception"/>
+<fullyQualifiedTypeName name="Freemium.Main"/>
+<fullyQualifiedTypeName name="S3_FREEMIUM.CarteBancaire"/>
+</qualifiedTypeNameHistroy>

@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     # Changements globaux
     networkStack = 0
-    delay = 1
+    delay = 3
     pcTrois = True
     mortPcTrois = True
     dureeVie = 20

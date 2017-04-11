@@ -1,0 +1,21 @@
+package Freemium;
+
+public class Free extends Utilisateur {
+
+	protected final int maxEcoute = 3;
+	
+	public Free(String nom){
+		super(nom);
+	}
+	
+	protected boolean droit(){
+		return this.nbEcoute <= maxEcoute;
+	}
+	
+	protected void reset(){
+		this.nbEcoute = 0;
+	}
+	
+	protected void doUpdate(){
+	}
+}

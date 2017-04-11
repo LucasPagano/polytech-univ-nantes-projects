@@ -3,5 +3,5 @@ project(tp2)
 
 set(CMAKE_C_STANDARD 11)
 
-set(SOURCE_FILES signal.c)
+set(SOURCE_FILES heritage_sig.c)
 add_executable(tp2 ${SOURCE_FILES})

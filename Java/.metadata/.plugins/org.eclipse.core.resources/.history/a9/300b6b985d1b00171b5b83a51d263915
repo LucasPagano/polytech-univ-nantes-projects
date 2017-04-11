@@ -1,0 +1,37 @@
+package Freemium;
+
+import S3_FREEMIUM.BanqueMusique;
+import S3_FREEMIUM.Forbidden;
+
+public abstract class Utilisateur {
+	
+	private static int cpt = 0;
+	protected String nom;
+	protected int num = cpt++;
+	protected int favori = 0;
+	protected int nbEcoute = 0;
+	
+	public Utilisateur(String nom){
+		this.nom = nom;		
+	}
+	
+	public String getFile(int id){
+		if (this.droit()){
+			try {
+				this.nbEcoute++;
+				return BanqueMusique.getFile(id);
+			} catch (Forbidden e) {
+				e.printStackTrace();
+				this.nbEcoute--;
+				return null;
+			}
+		} else{
+			return null;
+		}
+	}
+	
+	protected abstract boolean droit();
+	
+	protected abstract void update();
+	
+}

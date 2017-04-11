@@ -1,0 +1,29 @@
+package Freemium;
+
+import java.util.ArrayList;
+
+public class SytemeFreemiumStreaming {
+	
+	protected ArrayList<Utilisateur> users = new ArrayList<Utilisateur>();
+	
+	protected Thread runner;
+	
+	
+	public SytemeFreemiumStreaming() {
+		runner = new Thread() {
+			@Override
+			public void run() {
+				try {
+					sleep(1000);
+					for(Utilisateur user : users){
+						user.updateDaily();
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		runner.start();
+	}
+
+}

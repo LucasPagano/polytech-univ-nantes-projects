@@ -36,7 +36,5 @@ int main() {
     stat("../a.txt", bufstat2);
     printf("Numéro d'i_noeud %i, FileDescriptor %i\n", (int)bufstat2->st_ino, desc2);
 
-
-
     return 0;
 }

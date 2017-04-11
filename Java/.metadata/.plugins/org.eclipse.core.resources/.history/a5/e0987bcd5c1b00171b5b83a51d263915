@@ -1,0 +1,11 @@
+package Freemium;
+
+public class Premium extends Utilisateur {
+	
+	public Premium(String nom){
+		super(nom);
+	}
+	
+	
+
+}
