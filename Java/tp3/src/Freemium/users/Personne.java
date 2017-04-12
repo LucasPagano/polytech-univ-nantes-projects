@@ -1,5 +1,6 @@
 package Freemium.users;
 
+import S3_FREEMIUM.AdresseElectronique;
 import S3_FREEMIUM.CarteBancaire;
 
 public class Personne {
@@ -9,6 +10,7 @@ public class Personne {
 	protected int num;
 	protected int favori;
 	protected int nbEcoute;
+	public AdresseElectronique mail;
 	
 	protected CarteBancaire cb;
 	
@@ -18,6 +20,12 @@ public class Personne {
 		this.favori = 0;
 		this.nbEcoute = 0;
 		this.cb = null;
+		this.mail = new AdresseElectronique(nom, "hotmail.com");
+	}
+	
+	@Override
+	public String toString() {
+		return nom;
 	}
 
 	public CarteBancaire getCb() {

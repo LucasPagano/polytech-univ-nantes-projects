@@ -1,8 +1,8 @@
 package liste_chainee;
 
 public class Cellule extends Liste {
-	private Integer val;
-	private Liste next;
+	Integer val;
+	Liste next;
 
 	public Cellule(int val, Liste next){
 		this(val);

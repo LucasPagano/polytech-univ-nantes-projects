@@ -1,0 +1,10 @@
+package S3_FREEMIUM;
+
+public class AdresseElectronique {
+	public String mail;
+	
+	public AdresseElectronique(String nom){
+		this.mail = nom + "@hotmail.com";
+	}
+
+}

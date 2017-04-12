@@ -1,0 +1,17 @@
+package Freemium;
+
+import Freemium.users.Free;
+import Freemium.users.Personne;
+import Freemium.users.Premium;
+import S3_FREEMIUM.CarteBancaire;
+
+public class Main {
+
+	public static void main(String[] args) {
+		SytemeFreemiumStreaming mySystem = new SytemeFreemiumStreaming();
+		mySystem.addUserToSystem(new Free(new Personne("Jean Eudes")));
+		try {
+			mySystem.addUserToSystem(new Premium(new Personne("Fabien Hudier"), new CarteBancaire(0, 1, 2)));
+		} catch (Exception e) {}
+	}
+}

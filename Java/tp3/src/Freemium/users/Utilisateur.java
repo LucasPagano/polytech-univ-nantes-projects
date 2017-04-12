@@ -5,10 +5,15 @@ import S3_FREEMIUM.Forbidden;
 
 public abstract class Utilisateur {
 	
-	protected Personne personne;
+	public Personne personne;
 
 	public Utilisateur(Personne personne){
 		this.personne = personne;
+	}
+	
+	@Override
+	public String toString() {
+		return this.personne.toString();
 	}
 	
 	public String getFile(int id){
