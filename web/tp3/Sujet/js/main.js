@@ -94,10 +94,11 @@ function artistSelected(event) {
 
             table.style.width = '100%';
 
-            tableHead.style.backgroundColor = 'blue';
+            tableHead.style.backgroundColor = 'aqua';
             tableHead.style.color = 'white';
+            tableHead.style.marginTop = '0';
 
-            tableBody.innerHTML = ''
+            tableBody.innerHTML = '';
 
             data.forEach(function (element) {
                 row = document.createElement('tr');
@@ -143,16 +144,16 @@ function artistSelected(event) {
             aside.style.top = 'calc(50% - ' + aside.clientHeight / 2 + 'px)';
             aside.style.left = 'calc(50% - ' + aside.clientWidth / 2 + 'px)';
 
-            buttonOk.addEventListener('click', (element) => {
+            buttonOk.addEventListener('click', () => {
                 aside.style.opacity = '0';
-                /*On bouge la fenêtre pour que le lien derrière soit accessible à nouveau*/
-                aside.style.top = '-9999px';
-                aside.style.left = '-9999px';
+
+                /*On le remet en hidden après la transition*/
+                setTimeout(function () {
+                    aside.style.visibility = 'hidden';
+                }, 1000);
+
+
             }, true);
-
-
-
-
 
         });
 }
