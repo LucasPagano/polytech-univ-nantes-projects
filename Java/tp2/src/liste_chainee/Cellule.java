@@ -1,5 +1,7 @@
 package liste_chainee;
 
+import Visiteur.Visiteur;
+
 public class Cellule extends Liste {
 	Integer val;
 	Liste next;
@@ -49,5 +51,10 @@ public class Cellule extends Liste {
 		}else{
 			return this.val;
 		}
+	}
+
+	@Override
+	public <T> T admit(Visiteur<T> v) {
+		return v.visit(this);
 	}
 }

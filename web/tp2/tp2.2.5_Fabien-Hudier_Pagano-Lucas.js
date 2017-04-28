@@ -48,7 +48,6 @@ console.log('===========================');
 console.log(tabTitles);
 
 /*Question 4*/
-
 monObjFinal = Object.assign.apply(null, tabTitles);
 
 console.log('===========================');

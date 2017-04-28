@@ -2,6 +2,8 @@ package liste_chainee;
 
 import java.util.Iterator;
 
+import Visiteur.Visiteur;
+
 public abstract class Liste implements Iterable<Integer> {
 	abstract int size();
 	abstract boolean find(int n);
@@ -17,4 +19,6 @@ public abstract class Liste implements Iterable<Integer> {
 	public Iterator<Integer> iterator() {
 		return new ListeIter(this);
 	}
+	
+	public abstract <T> T admit(Visiteur<T> v);
 }

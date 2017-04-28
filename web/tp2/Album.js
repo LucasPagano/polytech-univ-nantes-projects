@@ -3,6 +3,8 @@
  * Authors : ['HUDIER Fabien', 'PAGANO Lucas'];
  */
 
+ /*Ne fonctionne qu'avant qu'on change le constructeur de Album*/
+
 module.exports = (function () {
     function Album(album) {
         Object.assign(this, album);

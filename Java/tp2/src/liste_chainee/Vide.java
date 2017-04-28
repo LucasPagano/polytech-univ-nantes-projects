@@ -1,5 +1,7 @@
 package liste_chainee;
 
+import Visiteur.Visiteur;
+
 public class Vide extends Liste {
 
 	public int size() {
@@ -14,5 +16,9 @@ public class Vide extends Liste {
 		return Integer.MIN_VALUE;
 	}
 
+	@Override
+	public <T> T admit(Visiteur<T> v) {
+		return v.visit(this);
+	}
 
 }

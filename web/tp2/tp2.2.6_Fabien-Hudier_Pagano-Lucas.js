@@ -4,8 +4,14 @@
  */
 
 var album;
+var album2;
+var albums;
 /* Question 1 */
 Artist.list = [];
+
+Album.prototype.getTitle = function () {
+    return this.title;
+};
 
 function Artist(nom) {
     this.nom = nom;
@@ -30,22 +36,36 @@ Artist.withName = function (name) {
 
 /*Question 2*/
 Artist.prototype.addAlbum = function (album) {
-    this.albumsProduits.push(album);
+    this.albumsProduits[album.getTitle()] = album;
 };
 
 /*Question 3*/
 function Album(album) {
     Object.assign(this, album);
     this.artist = Artist.withName(this.artist);
+    this.artist.addAlbum(this);
 }
 
 album = new Album({
-    title: 'Fresh Cream',
+    title: 'L\'album de Jean Michel',
     artist: 'Jean Michel',
-    year: 1966,
+    year: 2012,
 });
 
-console.log(album);
+album2 = new Album({
+    title: 'Sans titre',
+    artist: 'Sans nom',
+    year: 0,
+});
 
-Artist.withName('Jean Michel').addAlbum(album);
-console.log(album);
+albums = {album, album2};
+
+console.log('===========================');
+console.log('Albums');
+console.log('===========================');
+console.log(albums);
+
+console.log('===========================');
+console.log('La liste des artistes');
+console.log('===========================');
+console.log(Artist.list);
