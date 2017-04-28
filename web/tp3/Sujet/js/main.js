@@ -6,13 +6,19 @@
 var genres;
 console.log('log');
 
-if (self.fetch) {
-    fetch('http://127.0.0.1:3000/genres')
+var getRemoteObjects = function(url){
+    return fetch(url)
         .then(function (response) {
             if (response.ok) {
                 return response.json();
+            } else {
+                return Promise.reject('Erreur dans l\'url ou lors de la, requete');
             }
-        })
+        });
+};
+
+if (self.fetch) {
+    getRemoteObjects('http://127.0.0.1:3000/genres')
         .then(function (data) {
             var select = document.querySelector('select');
             var option;
@@ -30,7 +36,6 @@ if (self.fetch) {
         })
         .catch(function (error) {
             console.log(error);
-            return [];
         });
 }
 
@@ -43,12 +48,7 @@ function loadArtists(genre) {
     /*Mise à jour de la description*/
     p.textContent = genres.find((element) => element.id === genre).description;
     /*Remplissage de la liste*/
-    fetch('http://127.0.0.1:3000/genre/' + genre + '/artists')
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            }
-        })
+    getRemoteObjects('http://127.0.0.1:3000/genre/' + genre + '/artists')
         .then(function (data) {
             var ul = document.querySelector('#main > ul');
             var li, h3, a, img;
@@ -78,12 +78,7 @@ function loadArtists(genre) {
 
 function artistSelected(event) {
     var id = event.target.parentElement.id;
-    fetch('http://127.0.0.1:3000/artist/' + id + '/albums')
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            }
-        })
+    getRemoteObjects('http://127.0.0.1:3000/artist/' + id + '/albums')
         .then(function (data) {
             var aside = document.querySelector('#albums');
             var buttonOk = document.querySelector('#albums form button');
