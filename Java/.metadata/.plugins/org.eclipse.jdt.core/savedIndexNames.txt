@@ -1,5 +1,0 @@
-INDEX VERSION 1.127+/comptes/etudiant/E144754R/My-awesome-projects/Java/.metadata/.plugins/org.eclipse.jdt.core
-2221288891.index
-547848475.index
-1829079182.index
-436385816.index
