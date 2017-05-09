@@ -1,28 +1,34 @@
 'use strict';
 
+// Auteurs : Hudier Fabien, Pagano Lucas
 // Pas besoin d'évenement window.onload puisqu'on utilise l'attribut defer
 // lorsque l'on charge notre script
 
 var genres;
 console.log('log');
 
-var getRemoteObjects = function(url){
-    return fetch(url)
-        .then(function (response) {
-            if (response.ok) {
-                return response.json();
-            } else {
-                return Promise.reject('Erreur dans l\'url ou lors de la, requete');
-            }
-        });
-};
+//Fonction utilisée pour récupérer des données du serveur
+function getRemoteObjects(url) {
+    if (self.fetch) {
+        return fetch(url)
+            .then(function (response) {
+                if (response.ok) {
+                    return response.json();
+                }
+                else {
+                    return Promise.reject('Erreur dans l\'url ou lors de la, requete');
+                }
+            });
+    }
+}
 
-if (self.fetch) {
+function loadGenres() {
     getRemoteObjects('http://127.0.0.1:3000/genres')
         .then(function (data) {
             var select = document.querySelector('select');
             var option;
             genres = data;
+            // À chaque élément récupéré, on applique
             data.forEach(function (element) {
                 option = document.createElement('option');
                 option.innerHTML = element.name;
@@ -38,7 +44,6 @@ if (self.fetch) {
             console.log(error);
         });
 }
-
 
 function loadArtists(genre) {
     var h2 = document.querySelector('#main h2');
@@ -152,3 +157,5 @@ function artistSelected(event) {
 
         });
 }
+
+loadGenres();
