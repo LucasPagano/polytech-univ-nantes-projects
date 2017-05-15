@@ -19,6 +19,6 @@
   },
   "scripts": {
     "test": "node ./node_modules/gulp/bin/gulp.js",
-    "start": "node serveur.js"
+    "start": "node ./node_modules/nodemon/bin/nodemon.js serveur.js"
   }
 }

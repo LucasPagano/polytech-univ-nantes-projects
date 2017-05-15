@@ -1,5 +1,7 @@
 'use strict';
 
+// Auteurs : HUDIER Fabien, PAGANO Lucas
+
 var http = require('http');
 http.createServer(function requestListener(request, response){
     if(request.method === 'GET'){

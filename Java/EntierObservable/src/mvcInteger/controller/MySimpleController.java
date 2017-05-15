@@ -19,14 +19,14 @@ public class MySimpleController implements Observer {
 		this.model = model;
 
 		this.view.getLabel().setText(
-				"Valeur :" + Integer.toString(this.model.getVal()));
+				Integer.toString(this.model.getVal()));
 		this.view.pack();
 	}
 
 	@Override
 	public void update(Observable o, Object arg) {
 		if (o instanceof MyInteger) {
-			this.view.getLabel().setText("Valeur :" + Integer.toString(this.model.getVal()));
+			this.view.getLabel().setText(Integer.toString(this.model.getVal()));
 			this.view.pack();
 		}
 	}

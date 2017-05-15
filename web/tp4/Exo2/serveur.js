@@ -1,5 +1,7 @@
 'use strict';
 
+// Auteurs : HUDIER Fabien, PAGANO Lucas
+
 var express = require('express');
 var app =  express();
 var api = require('./api/api');
@@ -7,6 +9,5 @@ var api = require('./api/api');
 app.use('/', express.static('./public'));
 
 app.use('/api', api);
-
 
 app.listen(8080);

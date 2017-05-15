@@ -4,8 +4,8 @@ import java.util.Observable;
 
 public class MyInteger extends Observable{
 	int val;
-	static int upperLimit = 10;
-	static int lowerLimit = 0;
+	public static int upperLimit = 10;
+	public static int lowerLimit = 0;
 	
 	public MyInteger() {
 		this.val = 5;
@@ -23,7 +23,7 @@ public class MyInteger extends Observable{
 		this.setVal(this.getVal()-1);
 	}
 	
-	protected void setVal(int val) throws MyRangeException{
+	public void setVal(int val) throws MyRangeException{
 		if (val<lowerLimit || val>upperLimit){
 			throw new MyRangeException("Out of bounds");
 		} else {
