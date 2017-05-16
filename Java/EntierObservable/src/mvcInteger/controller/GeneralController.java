@@ -6,6 +6,7 @@ import java.util.Observer;
 
 import javax.swing.AbstractAction;
 
+import mvcInteger.i18n.Constants;
 import mvcInteger.model.IntegerWithUndo;
 import mvcInteger.model.MyInteger;
 import mvcInteger.model.MyRangeException;
@@ -60,8 +61,7 @@ public class GeneralController {
 	private class PlusController extends AbstractAction implements Observer {
 
 		public PlusController() {
-			// TODO Auto-generated constructor stub
-			this.putValue(NAME, "Plus");
+			this.putValue(NAME, Constants.PLUS_BUTTON_LABEL.translate());
 		}
 
 		@Override
@@ -84,7 +84,7 @@ public class GeneralController {
 	@SuppressWarnings("serial")
 	private class MinusController extends AbstractAction implements Observer {
 		public MinusController() {
-			this.putValue(NAME, "Moins");
+			this.putValue(NAME, Constants.MINUS_BUTTON_LABEL.translate());
 		}
 
 		@Override
@@ -108,7 +108,7 @@ public class GeneralController {
 	private class UndoController extends AbstractAction implements Observer{
 
 		public UndoController() {
-			this.putValue(NAME, "Undo");
+			this.putValue(NAME, Constants.UNDO_BUTTON_LABEL.translate());
 			this.setEnabled(false);
 		}
 		
@@ -129,7 +129,7 @@ public class GeneralController {
 	private class RedoController extends AbstractAction implements Observer{
 
 		public RedoController() {
-			this.putValue(NAME, "Redo");
+			this.putValue(NAME, Constants.REDO_BUTTON_LABEL.translate());
 			this.setEnabled(false);
 		}
 		@Override
