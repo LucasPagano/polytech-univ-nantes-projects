@@ -46,3 +46,8 @@ x=rnorm(n=60)
 y=-3.14*x + 7.04
 z=-exp(x)
 t = x*x
+
+x2 = rnorm(60,0,0.3)
+y2=y+x2
+t2=t+x2
+z2=z+x2
