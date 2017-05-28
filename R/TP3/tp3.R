@@ -18,6 +18,7 @@ cor(dVotes)
 
 #Corrélation sarko royale, ne pas oublier : il ne faut pas utiliser sd car il faut sd biaisé
 corRoyalSarko = (mean(Royal.PS*Sarkozy.UMP) - mean(Royal.PS)*mean(Sarkozy.UMP))/sqrt((mean(Royal.PS^2)-mean(Royal.PS)^2)*(mean(Sarkozy.UMP^2)-mean(Sarkozy.UMP)^2))
+corBayrouSarko = (mean(Bayrou.UDF*Sarkozy.UMP) - mean(Bayrou.UDF)*mean(Sarkozy.UMP))/sqrt((mean(Bayrou.UDF^2)-mean(Bayrou.UDF)^2)*(mean(Sarkozy.UMP^2)-mean(Sarkozy.UMP)^2))
 
 #<0.1 : faible
 #0.3 : moyen
