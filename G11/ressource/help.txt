@@ -1,0 +1,92 @@
+Dear user,
+This system provides an interface for voting on a predefined number of choices using a token
+based voting system. After a voting procedure is configured, clients may assign a number of
+tokens to each choice of their preference in order to express their opinion. The system
+automatically assigns each client to one of the choices.
+The vote is set up by an initiator. The initiator creates the run and configures its parameters.
+He then invites the clients. The syntax for registering initiators and clients is defined as
+ADDRESS, containing three fields: Name Surname Mailaddress. An example for ADDRESS
+is “Leonardo DaVinci Leonardo.Davinci@someserver.com”. The syntax for identifying
+registered runs, choices, clients and initiators is IDENTIFIER which is a random unique 64bit
+number assigned by the system.
+If not stated otherwise, the system answers with a STATUS message to a successfully
+processed request and with an error message detailing the error otherwise.
+
+===
+General Commands:
+===
+
+HELP
+This help message is returned.
+
+RUN IDENTIFIER
+Selects a specific run with the given identifier. Shall always precede any other command
+except CREATERUN and HELP.
+
+USER IDENTIFIER
+Selects the client or initiator by its identifier.
+
+STATUS
+Returns the status of the current evaluation for this particular client or initiator. The response
+for a client contains the configuration parameters of the RUN, the client’s CHOICE, and
+potential FOLLOWER information. The response for an initiator contains the configuration
+parameters for the RUN, the list of all configured CLIENTS and their CHOICES, and the
+current DECISION.
+
+===
+Client Commands:
+===
+
+VOTE IDENTIFIER, NUMBER_OF_TOKENS
+The client votes for a particular CHOICE by placing a number of tokens on that choice’s
+identifier. One or several VOTE commands are sent in one email. The total number of tokens
+in one email has to match the number of tokens configured by the initiator. A client may send
+several mails to the system when his opinion on the preferences changes. A STATUS is
+returned when the system accepts the choice. An error message is returned if the total
+number of tokens does not match the configuration, when the identifiers specified are invalid
+Project MailVote - Polytech Nantes - Département Informatique - Version 0.8 - Page 6 / 9
+for this run, or when the client is a FOLLOWER of another client who provided a vote email
+first.
+
+FOLLOW IDENTIFIER
+The client delegates the voting to another client that is specified in the identifier. The identifier
+has to be communicated to the follower by the other client or by an initiator.
+
+===
+Initiator Commands:
+===
+
+CREATERUN ADDRESS
+Creates and selects a new run. All further commands are configuring the created run. The
+system answers with the initiators version of STATUS.
+
+TOKENCOUNT number
+The number of tokens that a client holds in order to express his preference in this run.
+DESCRIPTION text
+The description of the run as presented to the clients.
+
+ADDCLIENT ADDRESS
+Adds a client to the current run.
+
+DELCLIENT identifier
+Deletes a client from the current run.
+
+ADDCHOICE text
+Adds the provide text of the choice to the list of choices.
+
+DELCHOICE identifier
+Deletes the choice corresponding to the identifier from the list of choices.
+
+SENDINVITATION text
+Sends an invitation to all clients providing the additional text in the email, i.e. for identifying
+the initiator who send the text or for specifying a voting deadline. This invitation contains the
+description of the current run and instructions on how to perform the voting with preconfigured
+commands for the answer. As the client may use the reply button in order to perform his vote,
+the text of the message is written such that the interpretation of the system conforms to the
+desired effect of voting.
+
+SENDDECISION text
+Sends a decision mail to all clients, informing each client which choice was assigned to him.
+The additional text is sent to the clients in the mail. This usually finishes a run although clients
+may continue voting and a several decision mails may be sent by the initiator in which case,
+text may be used to identify draft and final decisions.

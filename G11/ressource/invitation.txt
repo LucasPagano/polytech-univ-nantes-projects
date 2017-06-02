@@ -1,0 +1,26 @@
+Dear user,
+This is an invitation to vote. You are registred for the vote
+DESCRIPTION
+
+ADDITIONALTEXT
+
+This is possible choices:
+CHOICE
+_____________________________________
+To vote, you can reply to this mail and you will vote for : DEFAULTCHOICE
+You have TOKENNUMBER tokens.
+In order to vote for a different choice you can write the following command in the body of an email to the system:
+$RUN IDRUN
+$VOTE the_id_of_your_choice number_of_tokens
+
+To see the others choice use the commands
+$RUN IDRUN
+$STATUS
+
+For any more informations use the command HELP
+Best regards.
+
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+The part of this mail is the default command, if you want to respond and put TOKENNUMBER on DEFAULTCHOICE.
+RUN IDRUN
+VOTE IDCLIENT IDDEFAULTCHOICE
