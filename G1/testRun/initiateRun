@@ -1,0 +1,17 @@
+CREATERUN john.doe.mailvote.test@gmail.com
+DESCRIPTION this is a test
+TOKENCOUNT 10
+ADDCLIENT john.doe.mailvote.test@gmail.com
+ADDCLIENT john.doe.mailvote.test2@gmail.com
+ADDCLIENT john.doe.mailvote.test2@gmail.com
+ADDCLIENT john.doe.mailvote.test2@gmail.com
+ADDCLIENT john.doe.mailvote.test2@gmail.com
+ADDCLIENT john.doe.mailvote.test2@gmail.com
+ADDCLIENT john.doe.mailvote.test2@gmail.com
+ADDCLIENT john.doe.mailvote.test2@gmail.com
+ADDCLIENT john.doe.mailvote.test2@gmail.com
+ADDCLIENT john.doe.mailvote.test2@gmail.com
+ADDCHOICE INFO
+ADDCHOICE ETN
+ADDCHOICE MATERIAUX
+ADDCHOICE THERMIQUE

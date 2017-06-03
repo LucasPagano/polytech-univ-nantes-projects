@@ -1,0 +1,21 @@
+########################################################Variable for Mail server################################################################ 
+choices= unique_num
+tokens = number of tokens
+selection = time
+decision = user_selection
+constraintP = positive (client I.P address)
+constraintN = negative (client I.P address)
+runs= assignment
+client = unique_numC
+follower = unique_numC
+initiator = initiate_mail
+######################################################################Server##################################################################### 
+incomingServer_type= IMAP
+outgoingServer_type = IMAP
+IMAP_Server = imap.
+Port_num = 993
+User_Name = Enter your Email Address (example: your_username@gmail.com)
+Password =  Your password (client I.P address)
+Email Address =  Your e-mail address (example: username@cogeco.ca)
+socket_type = plain
+
