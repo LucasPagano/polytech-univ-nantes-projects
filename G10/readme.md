@@ -1,8 +1,8 @@
 GROUP 10 'LE BIAN Raphaël 'MOHAMED MOUSSA ElMokhtar 'DIABY Yaocuba 'Kane Amadou \\
 
 # /!\ important
-*notre programme traite uniquement les emails qui contiennent le mot cle mailvote dans le champs objet*
-EX: "RE:mailvote", "RE:RE:mailvote", "mAIlOvTe", "mailvote"
+*notre programme traite uniquement les emails qui contiennent le mot cle mailvote dans le champs objet* \\
+EX: "RE:mailvote", "RE:RE:mailvote", "mAIlOvTe", "mailvote" \\
 
 
 Choses non implementée: \\
