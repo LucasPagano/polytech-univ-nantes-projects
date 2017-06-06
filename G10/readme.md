@@ -6,10 +6,10 @@ EX: "RE:mailvote", "RE:RE:mailvote", "mAIlOvTe", "mailvote"</br>
 
 
 Choses non implementée:</br>
--DELCLIENT</br>
--DELINITIATOR</br>
--DELCHOICE</br>
--le fait que le programme tourne en arriere plan et ecoute le server mail</br>
+DELCLIENT</br>
+DELINITIATOR</br>
+DELCHOICE</br>
+le fait que le programme tourne en arriere plan et ecoute le server mail</br>
 
 modifiez le fichier mailvote.java, pour utiliser un server mail perso (la flemme)</br>
 
