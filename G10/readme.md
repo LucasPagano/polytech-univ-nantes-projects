@@ -1,25 +1,27 @@
-GROUP 10 'LE BIAN Raphaël 'MOHAMED MOUSSA ElMokhtar 'DIABY Yaocuba 'Kane Amadou
+GROUP 10 'LE BIAN Raphaël 'MOHAMED MOUSSA ElMokhtar 'DIABY Yaocuba 'Kane Amadou</br>
 
-# /!\ important
-*notre programme traite uniquement les emails qui contiennent le mot cle mailvote dans le champs objet*
-EX: "RE:mailvote", "RE:RE:mailvote", "mAIlOvTe", "mailvote"
+# /!\ important</br>
+*notre programme traite uniquement les emails qui contiennent le mot cle mailvote dans le champs objet*</br>
+EX: "RE:mailvote", "RE:RE:mailvote", "mAIlOvTe", "mailvote"</br>
 
 
-Choses non implementée:
--DELCLIENT
--DELINITIATOR
--DELCHOICE
--le fait que le programme tourne en arriere plan et ecoute le server mail
+Choses non implementée:</br>
+-DELCLIENT</br>
+-DELINITIATOR</br>
+-DELCHOICE</br>
+-le fait que le programme tourne en arriere plan et ecoute le server mail</br>
 
-modifiez le fichier mailvote.java, pour utiliser un server mail perso (la flemme)
+modifiez le fichier mailvote.java, pour utiliser un server mail perso (la flemme)</br>
 
-problem connue:
-probleme d'encodage des mails (qui a ete pris en compte dans le programme, mais on a pas d'explication concernant son origine)
+problem connue:</br>
+probleme d'encodage des mails (qui a ete pris en compte dans le programme, mais on a pas d'explication concernant son origine)</br>
 
 à venir :
--choix assignable à plusieurs personnes (bonus ?)
--lock
--un "parseur" plus intelligent (indique au user qu'es ce qui va pas et à quel ligne)
--interface plus propre
+-choix assignable à plusieurs personnes (bonus ?)</br>
+-lock</br>
+-un "parseur" plus intelligent (indique au user qu'es ce qui va pas et à quel ligne)</br>
+-interface plus propre</br>
+
+
 
 
