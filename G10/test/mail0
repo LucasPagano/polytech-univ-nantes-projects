@@ -1,0 +1,17 @@
+FROM 1
+/home/mok33/yacouba@MailVote.com/
+TO 1
+/home/mok33/MailVote@test.com/
+SUBJECT 1
+Hello Word!
+BODY 10
+CREATERUN mokhtar MOHAMED-MOUSSA
+DESCRIPTION Hello, this is a test
+TOKENCOUNT 12
+ADDCLIENT user1 test /home/mok33/kalabala@MailVote.com/
+ADDCLIENT user2 test /home/mok33/raph@MailVote.com/
+ADDCLIENT user3 test /home/mok33/moussa@MailVote.com/
+ADDCHOICE test1 2
+ADDCHOICE test2 1
+ADDCHOICE test3 2
+SENDINVITATION

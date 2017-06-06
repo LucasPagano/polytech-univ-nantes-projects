@@ -1,0 +1,34 @@
+USER d4290d28n7VOTE 0,1VOTE 1,2VOTE 2,9END
+selectUser
+Selected Run :d28n7
+Total :1
+Total :1
+reading 0/1
+CREATERUN mokhtar MOHAMED-MOUSSA
+createRun
+idInitiator : d2ipbd28n7
+DESCRIPTION Hello, this is a test
+description
+TOKENCOUNT 12
+tokenCount
+ADDCLIENT user1 test medmoussamokhtar@gmail.com
+addClient
+ADDCLIENT user2 test mmoussamokhtar@yahoo.fr <dyacouba@hotmail.com>
+addClient
+ADDCLIENT user3 test elmokhtar.mohamed-moussa@etu.univ-nantes.fr
+addClient
+ADDCHOICE test1
+addChoice
+ADDCHOICE test2
+addChoice
+ADDCHOICE test3
+addChoice
+SENDINVITATION
+sendInvitation
+users id's : 
+d2ipbd28n7
+cpjd7d28n7
+d0in3d28n7
+d4290d28n7
+Client :d4290d28n7 : user2 test mmoussamokhtar@yahoo.fr
+ 
