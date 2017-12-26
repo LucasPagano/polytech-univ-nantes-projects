@@ -113,7 +113,6 @@ heuristic(_, [], 0).
 
 %Predicate which forms a pair containing a state and its value, from a state and a list of individuals, to use with maplist
 %In the A* algorithm, this is f(State) = g(State) + h(State)
-%We use -f because keysort puts min at first place
 %TODO : find out why f = -(GValue + 1/FValue) works so much better
 stateValue(IndivList, (Placed, ToPlace), R-(Placed, ToPlace)):-
 	write("		Child state : ("), write((Placed, ToPlace)), write(")"), nl,
@@ -126,7 +125,7 @@ stateValue(IndivList, (Placed, ToPlace), R-(Placed, ToPlace)):-
 	keysort(ToPlaceWithValues,  ToPlaceOrdered),
 	%h(state)
 	heuristic(IndivList, ToPlaceOrdered, FValue),
-	R is -(GValue + FValue),
+	R is (GValue + FValue),
 	write("		GValue : "), write(GValue) , write(" FValue : "), write(FValue), nl,
 	write("		F(State) = GValue + FValue = "), write(R), nl.
 
@@ -136,7 +135,6 @@ initial(Placed, _):-
 	Placed = [].
 
 %TODO : f should be max(f(state), f(state_parent))
-%TODO : use max_member instead of keysort
 aStar(_, [_-(HeadStatePlaced, HeadStateToPlace)|_], HeadStatePlaced):-
   final(HeadStatePlaced, HeadStateToPlace).
 
@@ -154,8 +152,11 @@ aStar(IndivList, [(HeadStatePlaced, HeadStateToPlace)|_], Result):-
 	%then compute the values and order them to be able to call the real aStar predicate
 	findall(P, (set(_, NewToPlace2, NewPlaced2, NewFromList, NewToList), P = (NewToList, NewFromList)), Children),
 	maplist(stateValue(IndivList), Children, StateValues),
-	keysort(StateValues, OrderedStates),
-	aStar(IndivList, OrderedStates, Result).
+
+	max_member(BestState, StateValues),
+	delete(StateValues, BestState, StateValuesWithoutBest),
+	append([BestState], StateValuesWithoutBest, StateValuesBestFirstPlace),
+	aStar(IndivList, StateValuesBestFirstPlace, Result).
 
 aStar(IndivList, [_-(HeadStatePlaced, HeadStateToPlace)|TailStates], Result):-
 	not(final(HeadStatePlaced, HeadStateToPlace)),
@@ -165,8 +166,11 @@ aStar(IndivList, [_-(HeadStatePlaced, HeadStateToPlace)|TailStates], Result):-
 	findall(P, (set(_, HeadStateToPlace, HeadStatePlaced, NewFromList, NewToList), P = (NewToList, NewFromList)), Children),
 	%give each children its value
 	maplist(stateValue(IndivList), Children, ChildrenValues),
-	%Append them to the States
+	%Append them to the states
 	append(TailStates, ChildrenValues, NewStates),
-	%sort the values, since they are negated, the bigger one will come first
-	keysort(NewStates, OrderedStates),
-	aStar(IndivList, OrderedStates, Result).
+	%get the max value
+	max_member(BestState, NewStates),
+	%add it at the beginning
+	delete(NewStates, BestState, NewStatesWithoutBest),
+	append([BestState], NewStatesWithoutBest, NewStatesBestFirstPlace),
+	aStar(IndivList, NewStatesBestFirstPlace, Result).
