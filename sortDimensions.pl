@@ -1,7 +1,15 @@
-% How to use : generateIndivList(2, 4, X), createFirstState(X, InitialState),  aStar(X, [InitialState], R).
+%How to use : main(NbIndiv, NbDimensions, Result).
+
+main(NbIndiv, NbDimensions, R):-
+	generateIndivList(NbIndiv, NbDimensions, Individuals),
+	createFirstState(Individuals, InitialState),
+	nth1(1, InitialState, PrintInitialState),
+	write("Individuals = "), write(Individuals), nl,
+	write("Initial state : ("), write(PrintInitialState), write(")"), nl,
+	aStar(Individuals, InitialState, R).
 
 %Predicate used to create first state from indiv list
-createFirstState([IndivListHead|_], ([], ToPlace)):-
+createFirstState([IndivListHead|_], [([], ToPlace)]):-
 	length(IndivListHead, L),
 	numlist(1, L, ToPlace).
 
@@ -31,17 +39,9 @@ computeAreaIndiv(Indiv, [FirstPi, SecondPi|TailPi], Area):-
 /**
 *tests :
 *computeAreaList([[1,1,1,1], [0,1,0,1], [0.5,1,0.5,1], [0,0.5,1,0.5]], [1,2,3,4], Area).
-*"AreaIndiv : "2.0
-*"AreaIndiv : "0.0
-*"AreaIndiv : "1.0
-*"AreaIndiv : "0.5
 *Area = 3.5;
 *
 *computeAreaList([[1,1,1,1], [0,1,0,1], [0.5,1,0.5,1], [0,0.5,1,0.5]], [1,3,2,4], Area).
-*"AreaIndiv : "2.0
-*"AreaIndiv : "0.5
-*"AreaIndiv : "1.125
-*"AreaIndiv : "0.375
 *Area = 4.0 ;
 */
 
@@ -75,20 +75,69 @@ set(Elem, FromList, ToList, NewFromList, NewToList):-
 	%We put elem in second place because we want to append at end of list
 	append(ToList, [Elem], NewToList).
 
-%Predicate which forms a pair containing a state and its value, from a state and a list of individuals, to use with maplist
-%For now the value is only the area, we want to include the heuristic
-stateValue(IndivList, (Placed, ToPlace), R-(Placed, ToPlace)):-
-	computeAreaList(IndivList, Placed, Value),
-	%we negate the value so keysort puts the larger at the front
-	R is - Value.
+%Sum the values of the n'th dimension over all individuals
+sumOverIndivs([], Dimension, 0-Dimension).
+sumOverIndivs([FirstIndiv|OtherIndivs], Dimension, R-Dimension):-
+	nth1(Dimension, FirstIndiv, Result),
+	sumOverIndivs(OtherIndivs, Dimension, Result2-_),
+	R is Result + Result2.
 
-initialState(state([],[1,2,3])).
+multForAllIndivs([], _, _, 0).
+multForAllIndivs([FirstIndiv|OtherIndivs], FirstDimension, SecondDimension, R):-
+	nth1(FirstDimension, FirstIndiv, FirstDimensionValue),
+	nth1(SecondDimension, FirstIndiv, SecondDimensionValue),
+	% must be larger than the real one, so we use 1 instead of 1/2
+	AreaIndiv is FirstDimensionValue * SecondDimensionValue,
+	multForAllIndivs(OtherIndivs, FirstDimension, SecondDimension, AreaList),
+	R is AreaIndiv + AreaList.
+
+%As the heuristic, we choose the product two by two of the remaining dimensions, ordered by max of the sum of the values of all individuals on them
+%If there's only one dimension remaining, we take half of the sum of its value over all individuals
+heuristic(IndivList, [_-FirstDimension|Tail], Result):-
+	%Tail has at least two dimensions, terminal case is one
+	length(Tail, L), L >= 2,
+	nth1(1, Tail, _-SecondDimension),
+	multForAllIndivs(IndivList, FirstDimension, SecondDimension, R1),
+	heuristic(IndivList, Tail, R2),
+	Result is R1 + R2.
+
+heuristic(IndivList, [_-FirstDimension, _-SecondDimension], Result):-
+	multForAllIndivs(IndivList, FirstDimension, SecondDimension, Result).
+
+heuristic(_, [DimensionValue-_], Result):-
+	%The value of the dimension is already the sum over all the individuals, so we only have to halve it
+	Result is 1/2 * DimensionValue.
+
+%When everything is placed, heuristic is 0 by definition
+heuristic(_, [], 0).
+
+%Predicate which forms a pair containing a state and its value, from a state and a list of individuals, to use with maplist
+%In the A* algorithm, this is f(State) = g(State) + h(State)
+%We use -f because keysort puts min at first place
+%TODO : find out why f = -(GValue + 1/FValue) works so much better
+stateValue(IndivList, (Placed, ToPlace), R-(Placed, ToPlace)):-
+	write("		Child state : ("), write((Placed, ToPlace)), write(")"), nl,
+	%g(State)
+	computeAreaList(IndivList, Placed, GValue),
+	%Now compute h(State)
+	%order the dimensions
+	maplist(sumOverIndivs(IndivList), ToPlace, ToPlaceWithValues),
+	% order is from min to max but we don't care, we just want them ordered
+	keysort(ToPlaceWithValues,  ToPlaceOrdered),
+	%h(state)
+	heuristic(IndivList, ToPlaceOrdered, FValue),
+	R is -(GValue + FValue),
+	write("		GValue : "), write(GValue) , write(" FValue : "), write(FValue), nl,
+	write("		F(State) = GValue + FValue = "), write(R), nl.
+
 final(_, ToPlace):-
 	ToPlace = [].
 initial(Placed, _):-
 	Placed = [].
 
-aStar(_, [(HeadStatePlaced, HeadStateToPlace)|_], HeadStatePlaced):-
+%TODO : f should be max(f(state), f(state_parent))
+%TODO : use max_member instead of keysort
+aStar(_, [_-(HeadStatePlaced, HeadStateToPlace)|_], HeadStatePlaced):-
   final(HeadStatePlaced, HeadStateToPlace).
 
 	%At first, two dimensions are chosen so area has a meaning and can be computed
@@ -99,19 +148,25 @@ aStar(IndivList, [(HeadStatePlaced, HeadStateToPlace)|_], Result):-
 	nth1(2, HeadStateToPlace, Dimension2),
 	set(Dimension1, HeadStateToPlace, HeadStatePlaced, NewToPlace, NewPlaced),
 	set(Dimension2, NewToPlace, NewPlaced, NewToPlace2, NewPlaced2),
-	aStar(IndivList, [(NewPlaced2, NewToPlace2)], Result).
 
-aStar(IndivList, [(HeadStatePlaced, HeadStateToPlace)|TailStates], Result):-
+	write("	Starting state : ("), write((NewPlaced2, NewToPlace2)), write(")"), nl,
+
+	%then compute the values and order them to be able to call the real aStar predicate
+	findall(P, (set(_, NewToPlace2, NewPlaced2, NewFromList, NewToList), P = (NewToList, NewFromList)), Children),
+	maplist(stateValue(IndivList), Children, StateValues),
+	keysort(StateValues, OrderedStates),
+	aStar(IndivList, OrderedStates, Result).
+
+aStar(IndivList, [_-(HeadStatePlaced, HeadStateToPlace)|TailStates], Result):-
 	not(final(HeadStatePlaced, HeadStateToPlace)),
 	not(initial(HeadStatePlaced, HeadStateToPlace)),
-	%find head of stack's children
+	write("	Starting state : ("), write((HeadStatePlaced, HeadStateToPlace)), write(")"), nl,
+	%find HeadState's children, as it's the best state
 	findall(P, (set(_, HeadStateToPlace, HeadStatePlaced, NewFromList, NewToList), P = (NewToList, NewFromList)), Children),
-	append(TailStates, Children, NewStates),
-	%give each state its value
-	maplist(stateValue(IndivList), NewStates, StateValues),
+	%give each children its value
+	maplist(stateValue(IndivList), Children, ChildrenValues),
+	%Append them to the States
+	append(TailStates, ChildrenValues, NewStates),
 	%sort the values, since they are negated, the bigger one will come first
-	keysort(StateValues, [_- BestState| _ ]),
-	%Put the best one at the front
-	delete(NewStates, BestState, NewStatesWithoutBest),
-	append([BestState], NewStatesWithoutBest, NewStatesWithBestAtFirst),
-	aStar(IndivList, NewStatesWithBestAtFirst, Result).
+	keysort(NewStates, OrderedStates),
+	aStar(IndivList, OrderedStates, Result).
