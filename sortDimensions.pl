@@ -27,15 +27,12 @@ generateIndiv(Indiv, NbDimensions):-
 
 computeAreaList([], _, 0).
 computeAreaList([FirstIndiv|TailIndiv], Permutation, Area):-
-	computeAreaIndiv(FirstIndiv, Permutation, AreaIndiv),
+	%if permutation is same size as individuals, we must count the last triangle, else we shouldn't
+	length(FirstIndiv, Li), length(Permutation, Lp),
+	(Li =:= Lp -> computeAreaIndiv(FirstIndiv, Permutation, AreaIndiv) ; computeAreaIndivWithoutLast(FirstIndiv, Permutation, AreaIndiv)),
 	computeAreaList(TailIndiv, Permutation, AreaList),
 	Area is AreaList + AreaIndiv.
 
-%Second argument is Permutation list
-computeAreaIndiv(Indiv, [FirstPi, SecondPi|TailPi], Area):-
-	nth1(FirstPi, Indiv, ValueOfFirst),
-	%We have to remember the value of the first one for the last triangle
-	hiddenComputeAreaIndiv(Indiv, [FirstPi, SecondPi|TailPi], ValueOfFirst, Area).
 /**
 *tests :
 *computeAreaList([[1,1,1,1], [0,1,0,1], [0.5,1,0.5,1], [0,0.5,1,0.5]], [1,2,3,4], Area).
@@ -44,6 +41,26 @@ computeAreaIndiv(Indiv, [FirstPi, SecondPi|TailPi], Area):-
 *computeAreaList([[1,1,1,1], [0,1,0,1], [0.5,1,0.5,1], [0,0.5,1,0.5]], [1,3,2,4], Area).
 *Area = 4.0 ;
 */
+
+computeAreaIndivWithoutLast(_, [], 0).
+computeAreaIndivWithoutLast(Indiv, [FirstPi, SecondPi|TailPi], Area):-
+	length(TailPi, X), X > 0,
+	nth1(FirstPi, Indiv, Dim1),
+	nth1(SecondPi, Indiv, Dim2),
+	triangleArea(Dim1, Dim2, Triangle),
+	computeAreaIndivWithoutLast(Indiv, [SecondPi|TailPi], AreaOfTail),
+	Area is Triangle + AreaOfTail.
+
+	computeAreaIndivWithoutLast(Indiv, [FirstPi, SecondPi], Area):-
+		nth1(FirstPi, Indiv, Dim1),
+		nth1(SecondPi, Indiv, Dim2),
+		triangleArea(Dim1, Dim2, Area).
+
+
+computeAreaIndiv(Indiv, [FirstPi, SecondPi|TailPi], Area):-
+	nth1(FirstPi, Indiv, ValueOfFirst),
+	%We have to remember the value of the first one for the last triangle
+	hiddenComputeAreaIndiv(Indiv, [FirstPi, SecondPi|TailPi], ValueOfFirst, Area).
 
 hiddenComputeAreaIndiv(_, [], _, 0).
 hiddenComputeAreaIndiv(Indiv, [FirstPi, SecondPi|TailPi], VeryFirst, Area):-
@@ -111,23 +128,25 @@ heuristic(_, [DimensionValue-_], Result):-
 %When everything is placed, heuristic is 0 by definition
 heuristic(_, [], 0).
 
-%Predicate which forms a pair containing a state and its value, from a state and a list of individuals, to use with maplist
-%In the A* algorithm, this is f(State) = g(State) + h(State)
-%TODO : find out why f = -(GValue + 1/FValue) works so much better
-stateValue(IndivList, (Placed, ToPlace), R-(Placed, ToPlace)):-
-	write("		Child state : ("), write((Placed, ToPlace)), write(")"), nl,
-	%g(State)
-	computeAreaList(IndivList, Placed, GValue),
-	%Now compute h(State)
+orderForHeuristic(IndivList, ToPlace, ToPlaceOrdered):-
 	%order the dimensions
 	maplist(sumOverIndivs(IndivList), ToPlace, ToPlaceWithValues),
 	% order is from min to max but we don't care, we just want them ordered
-	keysort(ToPlaceWithValues,  ToPlaceOrdered),
+	keysort(ToPlaceWithValues,  ToPlaceOrdered).
+
+%Predicate which forms a pair containing a state and its value, from a state and a list of individuals, to use with maplist
+%In the A* algorithm, this is f(State) = g(State) + h(State)
+%TODO : find out why f = (GValue + 1/FValue) works so much better
+stateValue(IndivList, (Placed, ToPlace), R-(Placed, ToPlace)):-
+	write("		Child state : ("), write((Placed, ToPlace)), writeln(")"),
+	%g(State)
+	computeAreaList(IndivList, Placed, GValue),
+	orderForHeuristic(IndivList, ToPlace, ToPlaceOrdered),
 	%h(state)
 	heuristic(IndivList, ToPlaceOrdered, FValue),
 	R is (GValue + FValue),
-	write("		GValue : "), write(GValue) , write(" FValue : "), write(FValue), nl,
-	write("		F(State) = GValue + FValue = "), write(R), nl.
+	write("		GValue : "), write(GValue) , write(" FValue : "), writeln(FValue),
+	write("		F(State) = GValue + FValue = "), writeln(R).
 
 final(_, ToPlace):-
 	ToPlace = [].
@@ -143,11 +162,10 @@ aStar(IndivList, [(HeadStatePlaced, HeadStateToPlace)|_], Result):-
 	initial(HeadStatePlaced, HeadStateToPlace),
 	%Arbitrary choose the first two dimensions, here we take the first ones, we might want to change this
 	nth1(1, HeadStateToPlace, Dimension1),
-	nth1(2, HeadStateToPlace, Dimension2),
 	set(Dimension1, HeadStateToPlace, HeadStatePlaced, NewToPlace, NewPlaced),
 	set(Dimension2, NewToPlace, NewPlaced, NewToPlace2, NewPlaced2),
 
-	write("	Starting state : ("), write((NewPlaced2, NewToPlace2)), write(")"), nl,
+	write("	Starting state : ("), write((NewPlaced2, NewToPlace2)), writeln(")"),
 
 	%then compute the values and order them to be able to call the real aStar predicate
 	findall(P, (set(_, NewToPlace2, NewPlaced2, NewFromList, NewToList), P = (NewToList, NewFromList)), Children),
@@ -161,7 +179,7 @@ aStar(IndivList, [(HeadStatePlaced, HeadStateToPlace)|_], Result):-
 aStar(IndivList, [_-(HeadStatePlaced, HeadStateToPlace)|TailStates], Result):-
 	not(final(HeadStatePlaced, HeadStateToPlace)),
 	not(initial(HeadStatePlaced, HeadStateToPlace)),
-	write("	Starting state : ("), write((HeadStatePlaced, HeadStateToPlace)), write(")"), nl,
+	write("	Starting state : ("), write((HeadStatePlaced, HeadStateToPlace)), writeln(")"),
 	%find HeadState's children, as it's the best state
 	findall(P, (set(_, HeadStateToPlace, HeadStatePlaced, NewFromList, NewToList), P = (NewToList, NewFromList)), Children),
 	%give each children its value
