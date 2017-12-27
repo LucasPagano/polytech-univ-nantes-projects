@@ -1,12 +1,15 @@
-%How to use : main(NbIndiv, NbDimensions, Result).
+%How to use : main(NbIndiv, NbDimensions, (Permutation, Area)).
+% or : main(NbIndiv, NbDimensions, Result).
+% example : main(4, 8,(Permutation, Area)).
 
-main(NbIndiv, NbDimensions, R):-
+main(NbIndiv, NbDimensions, (Permutation, Area)):-
 	generateIndivList(NbIndiv, NbDimensions, Individuals),
 	createFirstState(Individuals, InitialState),
 	nth1(1, InitialState, PrintInitialState),
 	write("Individuals = "), write(Individuals), nl,
 	write("Initial state : ("), write(PrintInitialState), write(")"), nl,
-	aStar(Individuals, InitialState, R).
+	aStar(Individuals, InitialState, Permutation),
+	computeAreaList(Individuals, Permutation, Area).
 
 %Predicate used to create first state from indiv list
 createFirstState([IndivListHead|_], [([], ToPlace)]):-
@@ -160,15 +163,13 @@ aStar(_, [_-(HeadStatePlaced, HeadStateToPlace)|_], HeadStatePlaced):-
 	%At first, two dimensions are chosen so area has a meaning and can be computed
 aStar(IndivList, [(HeadStatePlaced, HeadStateToPlace)|_], Result):-
 	initial(HeadStatePlaced, HeadStateToPlace),
-	%Arbitrary choose the first two dimensions, here we take the first ones, we might want to change this
+	%Arbitrary choose the first dimension, here we take the first one, we might want to change this
 	nth1(1, HeadStateToPlace, Dimension1),
 	set(Dimension1, HeadStateToPlace, HeadStatePlaced, NewToPlace, NewPlaced),
-	set(Dimension2, NewToPlace, NewPlaced, NewToPlace2, NewPlaced2),
-
-	write("	Starting state : ("), write((NewPlaced2, NewToPlace2)), writeln(")"),
+	write("	Starting state : ("), write((NewPlaced, NewToPlace)), writeln(")"),
 
 	%then compute the values and order them to be able to call the real aStar predicate
-	findall(P, (set(_, NewToPlace2, NewPlaced2, NewFromList, NewToList), P = (NewToList, NewFromList)), Children),
+	findall(P, (set(_, NewToPlace, NewPlaced, NewFromList, NewToList), P = (NewToList, NewFromList)), Children),
 	maplist(stateValue(IndivList), Children, StateValues),
 
 	max_member(BestState, StateValues),
