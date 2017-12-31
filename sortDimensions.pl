@@ -9,7 +9,8 @@ main(NbIndiv, NbDimensions, (Permutation, Area)):-
 	write("Individuals = "), write(Individuals), nl,
 	write("Initial state : ("), write(PrintInitialState), write(")"), nl,
 	aStar(Individuals, InitialState, Permutation),
-	computeAreaList(Individuals, Permutation, Area).
+	computeAreaList(Individuals, Permutation, Area-_).
+
 
 %Predicate used to create first state from indiv list
 createFirstState([IndivListHead|_], [([], ToPlace)]):-
@@ -28,13 +29,14 @@ generateIndiv(Indiv, NbDimensions):-
 	length(Indiv, NbDimensions),
 	maplist(random(0.0, 1.0), Indiv).
 
-computeAreaList([], _, 0).
-computeAreaList([FirstIndiv|TailIndiv], Permutation, Area):-
+computeAreaList([], Permutation, 0-Permutation).
+computeAreaList([FirstIndiv|TailIndiv], Permutation, Area-Permutation):-
 	%if permutation is same size as individuals, we must count the last triangle, else we shouldn't
 	length(FirstIndiv, Li), length(Permutation, Lp),
-	(Li =:= Lp -> computeAreaIndiv(FirstIndiv, Permutation, AreaIndiv) ; computeAreaIndivWithoutLast(FirstIndiv, Permutation, AreaIndiv)),
-	computeAreaList(TailIndiv, Permutation, AreaList),
+	(Li == Lp -> computeAreaIndiv(FirstIndiv, Permutation, AreaIndiv) ; computeAreaIndivWithoutLast(FirstIndiv, Permutation, AreaIndiv)),
+	computeAreaList(TailIndiv, Permutation, AreaList-_),
 	Area is AreaList + AreaIndiv.
+
 
 /**
 *tests :
@@ -45,6 +47,7 @@ computeAreaList([FirstIndiv|TailIndiv], Permutation, Area):-
 *Area = 4.0 ;
 */
 
+%Not counting the triangle between last dimension and first one
 computeAreaIndivWithoutLast(_, [], 0).
 computeAreaIndivWithoutLast(Indiv, [FirstPi, SecondPi|TailPi], Area):-
 	length(TailPi, X), X > 0,
@@ -54,12 +57,12 @@ computeAreaIndivWithoutLast(Indiv, [FirstPi, SecondPi|TailPi], Area):-
 	computeAreaIndivWithoutLast(Indiv, [SecondPi|TailPi], AreaOfTail),
 	Area is Triangle + AreaOfTail.
 
-	computeAreaIndivWithoutLast(Indiv, [FirstPi, SecondPi], Area):-
-		nth1(FirstPi, Indiv, Dim1),
-		nth1(SecondPi, Indiv, Dim2),
-		triangleArea(Dim1, Dim2, Area).
+computeAreaIndivWithoutLast(Indiv, [FirstPi, SecondPi], Area):-
+	nth1(FirstPi, Indiv, Dim1),
+	nth1(SecondPi, Indiv, Dim2),
+	triangleArea(Dim1, Dim2, Area).
 
-
+%Counting the triangle between last dimension and first one
 computeAreaIndiv(Indiv, [FirstPi, SecondPi|TailPi], Area):-
 	nth1(FirstPi, Indiv, ValueOfFirst),
 	%We have to remember the value of the first one for the last triangle
@@ -106,13 +109,11 @@ multForAllIndivs([], _, _, 0).
 multForAllIndivs([FirstIndiv|OtherIndivs], FirstDimension, SecondDimension, R):-
 	nth1(FirstDimension, FirstIndiv, FirstDimensionValue),
 	nth1(SecondDimension, FirstIndiv, SecondDimensionValue),
-	% must be larger than the real one, so we use 1 instead of 1/2
-	AreaIndiv is FirstDimensionValue * SecondDimensionValue,
+	triangleArea(FirstDimensionValue, SecondDimensionValue, AreaIndiv),
 	multForAllIndivs(OtherIndivs, FirstDimension, SecondDimension, AreaList),
 	R is AreaIndiv + AreaList.
 
 %As the heuristic, we choose the product two by two of the remaining dimensions, ordered by max of the sum of the values of all individuals on them
-%If there's only one dimension remaining, we take half of the sum of its value over all individuals
 heuristic(IndivList, [_-FirstDimension|Tail], Result):-
 	%Tail has at least two dimensions, terminal case is one
 	length(Tail, L), L >= 2,
@@ -124,30 +125,34 @@ heuristic(IndivList, [_-FirstDimension|Tail], Result):-
 heuristic(IndivList, [_-FirstDimension, _-SecondDimension], Result):-
 	multForAllIndivs(IndivList, FirstDimension, SecondDimension, Result).
 
-heuristic(_, [DimensionValue-_], Result):-
-	%The value of the dimension is already the sum over all the individuals, so we only have to halve it
-	Result is 1/2 * DimensionValue.
+%If there's only one dimension remaining, we don't give anything, since we add the last triangle in StateValue
+heuristic(_, [_-_], 0).
 
 %When everything is placed, heuristic is 0 by definition
 heuristic(_, [], 0).
 
 orderForHeuristic(IndivList, ToPlace, ToPlaceOrdered):-
-	%order the dimensions
 	maplist(sumOverIndivs(IndivList), ToPlace, ToPlaceWithValues),
-	% order is from min to max but we don't care, we just want them ordered
 	keysort(ToPlaceWithValues,  ToPlaceOrdered).
 
 %Predicate which forms a pair containing a state and its value, from a state and a list of individuals, to use with maplist
 %In the A* algorithm, this is f(State) = g(State) + h(State)
-%TODO : find out why f = (GValue + 1/FValue) works so much better
 stateValue(IndivList, (Placed, ToPlace), R-(Placed, ToPlace)):-
 	write("		Child state : ("), write((Placed, ToPlace)), writeln(")"),
 	%g(State)
-	computeAreaList(IndivList, Placed, GValue),
+	computeAreaList(IndivList, Placed, GValue-_),
+
 	orderForHeuristic(IndivList, ToPlace, ToPlaceOrdered),
 	%h(state)
-	heuristic(IndivList, ToPlaceOrdered, FValue),
-	R is (GValue + FValue),
+	heuristic(IndivList, ToPlaceOrdered, HeuristicValue),
+	%add the triangle between last of ToPlaceOrdered and first Placed
+	%We only do it if there's a remaining dimension to place
+	length(ToPlace, L),
+	(L < 1  -> LastTriangle is 0 ; nth1(1, Placed, FirstDimension),
+																 last(ToPlaceOrdered, _-LastDimension),
+																 multForAllIndivs(IndivList, FirstDimension, LastDimension, LastTriangle)),
+  FValue is LastTriangle + HeuristicValue,
+	R is GValue + FValue,
 	write("		GValue : "), write(GValue) , write(" FValue : "), writeln(FValue),
 	write("		F(State) = GValue + FValue = "), writeln(R).
 
@@ -160,18 +165,17 @@ initial(Placed, _):-
 aStar(_, [_-(HeadStatePlaced, HeadStateToPlace)|_], HeadStatePlaced):-
   final(HeadStatePlaced, HeadStateToPlace).
 
-	%At first, two dimensions are chosen so area has a meaning and can be computed
 aStar(IndivList, [(HeadStatePlaced, HeadStateToPlace)|_], Result):-
 	initial(HeadStatePlaced, HeadStateToPlace),
-	%Arbitrary choose the first dimension, here we take the first one, we might want to change this
-	nth1(1, HeadStateToPlace, Dimension1),
-	set(Dimension1, HeadStateToPlace, HeadStatePlaced, NewToPlace, NewPlaced),
+	%Choose the first dimension to be the one which maximizes the sum of its values over all individuals
+	maplist(sumOverIndivs(IndivList), HeadStateToPlace, DimensionValues),
+	max_member(_-Dimension, DimensionValues),
+	set(Dimension, HeadStateToPlace, HeadStatePlaced, NewToPlace, NewPlaced),
 	write("	Starting state : ("), write((NewPlaced, NewToPlace)), writeln(")"),
 
 	%then compute the values and order them to be able to call the real aStar predicate
 	findall(P, (set(_, NewToPlace, NewPlaced, NewFromList, NewToList), P = (NewToList, NewFromList)), Children),
 	maplist(stateValue(IndivList), Children, StateValues),
-
 	max_member(BestState, StateValues),
 	delete(StateValues, BestState, StateValuesWithoutBest),
 	append([BestState], StateValuesWithoutBest, StateValuesBestFirstPlace),
