@@ -28,7 +28,6 @@ mainWithBest(NbIndiv, NbDimensions, (Permutation, Area)):-
 	max_member(Value-MaxPermutation, PermutationsWithValues),
 	write("Max permutation : "), write(MaxPermutation), write(" with area : "), writeln(Value).
 
-
 %Predicate used to create first state from indiv list
 createFirstState([IndivListHead|_], [([], ToPlace)]):-
 	length(IndivListHead, L),
@@ -50,19 +49,9 @@ computeAreaList([], Permutation, 0-Permutation).
 computeAreaList([FirstIndiv|TailIndiv], Permutation, Area-Permutation):-
 	%if permutation is same size as individuals, we must count the last triangle, else we shouldn't
 	length(FirstIndiv, Li), length(Permutation, Lp),
-	(Li == Lp -> computeAreaIndiv(FirstIndiv, Permutation, AreaIndiv) ; computeAreaIndivWithoutLast(FirstIndiv, Permutation, AreaIndiv)),
+	(Li == Lp -> once(computeAreaIndiv(FirstIndiv, Permutation, AreaIndiv)) ; once(computeAreaIndivWithoutLast(FirstIndiv, Permutation, AreaIndiv))),
 	computeAreaList(TailIndiv, Permutation, AreaList-_),
 	Area is AreaList + AreaIndiv.
-
-
-/**
-*tests :
-*computeAreaList([[1,1,1,1], [0,1,0,1], [0.5,1,0.5,1], [0,0.5,1,0.5]], [1,2,3,4], Area).
-*Area = 3.5;
-*
-*computeAreaList([[1,1,1,1], [0,1,0,1], [0.5,1,0.5,1], [0,0.5,1,0.5]], [1,3,2,4], Area).
-*Area = 4.0 ;
-*/
 
 %Not counting the triangle between last dimension and first one
 computeAreaIndivWithoutLast(_, [], 0).
@@ -214,3 +203,48 @@ aStar(IndivList, [_-(HeadStatePlaced, HeadStateToPlace)|TailStates], Result):-
 	delete(NewStates, BestState, NewStatesWithoutBest),
 	append([BestState], NewStatesWithoutBest, NewStatesBestFirstPlace),
 	aStar(IndivList, NewStatesBestFirstPlace, Result).
+
+
+:- begin_tests(tests).
+
+test(computeAreaIndiv):-
+
+	%Standard test
+	once(computeAreaIndiv([1,1,1,1], [1,2,3,4], Area)),
+	assertion(float(Area)),
+	assertion(Area == 2.0),
+
+	%If there are 0's at some dimensions, we end up with no area
+	once(computeAreaIndiv([1,0,1,0], [1,2,3,4], Area2)),
+	assertion(float(Area2)),
+	assertion(Area2 == 0.0),
+
+	%But if we change permutation, we get an area
+	once(computeAreaIndiv([1,0,1,0], [1,3,2,4], Area3)),
+	assertion(float(Area3)),
+	assertion(Area3 == 0.5).
+
+test(computeAreaIndivWithoutLast):-
+
+	%Without the last axis, if permutation isn't the same size as indiv
+	once(computeAreaIndivWithoutLast([1,1,1,1], [1,2,3], Area)),
+	assertion(float(Area)),
+	assertion(Area == 1.0).
+
+test(computeAreaList):-
+	%If permutation is same size as list, last triangle counts
+	computeAreaList([[1,1,1,1], [0,1,0,1], [0.5,1,0.5,1], [0,0.5,1,0.5]], [1,2,3,4], Area-[1,2,3,4]),
+	assertion(float(Area)),
+	assertion(Area == 3.5),
+
+	%Area depends on permutation
+	computeAreaList([[1,1,1,1], [0,1,0,1], [0.5,1,0.5,1], [0,0.5,1,0.5]], [1,3,2,4], Area2-[1,3,2,4]),
+	assertion(float(Area2)),
+	assertion(Area2 == 4.0),
+
+	%If permutation isn't the same size as individuals, it doesn't count the last triangle
+	computeAreaList([[1,1,1,1], [0,1,0,1], [0.5,1,0.5,1], [0,0.5,1,0.5]], [1,2,3], Area3-[1,2,3]),
+	assertion(float(Area3)),
+	assertion(Area3==1.75).
+
+:- end_tests(tests).
