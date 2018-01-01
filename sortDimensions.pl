@@ -155,7 +155,8 @@ stateValue(IndivList, (Placed, ToPlace), R-(Placed, ToPlace)):-
 	%We only do it if there's a remaining dimension to place
 	length(ToPlace, L),
 	(L < 1  -> LastTriangle is 0 ; nth1(1, Placed, FirstDimension),
-																 last(ToPlaceOrdered, _-LastDimension),
+																 %the order is from min to max, so we take the first one, since it's the one to end up in last if we pick them by value
+																 nth1(1, ToPlaceOrdered, _-LastDimension),
 																 multForAllIndivs(IndivList, FirstDimension, LastDimension, LastTriangle)),
   FValue is LastTriangle + HeuristicValue,
 	R is GValue + FValue,
@@ -167,7 +168,6 @@ final(_, ToPlace):-
 initial(Placed, _):-
 	Placed = [].
 
-%TODO : f should be max(f(state), f(state_parent))
 aStar(_, [_-(HeadStatePlaced, HeadStateToPlace)|_], HeadStatePlaced):-
   final(HeadStatePlaced, HeadStateToPlace).
 
