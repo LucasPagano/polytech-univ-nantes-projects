@@ -3,45 +3,50 @@
 % example : main(4, 8,(Permutation, Area)).
 
 main(NbIndiv, NbDimensions, (Permutation, Area)):-
-	generateIndivList(NbIndiv, NbDimensions, Individuals),
+	once(generateIndivList(NbIndiv, NbDimensions, Individuals)),
 	createFirstState(Individuals, InitialState),
 	nth1(1, InitialState, PrintInitialState),
 	write("Individuals = "), write(Individuals), nl,
 	write("Initial state : ("), write(PrintInitialState), write(")"), nl,
-	aStar(Individuals, InitialState, Permutation),
+	once(aStar(Individuals, InitialState, Permutation)),
 	computeAreaList(Individuals, Permutation, Area-_).
 
 %Only use this for debug as it computes all permutations
 mainWithBest(NbIndiv, NbDimensions, (Permutation, Area)):-
 	%Can't call main here because the indivuals generation is random, so we must use the same
-	generateIndivList(NbIndiv, NbDimensions, Individuals),
+	once(generateIndivList(NbIndiv, NbDimensions, Individuals)),
 	createFirstState(Individuals, InitialState),
 	nth1(1, InitialState, PrintInitialState),
 	write("Individuals = "), write(Individuals), nl,
 	write("Initial state : ("), write(PrintInitialState), write(")"), nl,
-	aStar(Individuals, InitialState, Permutation),
+	once(aStar(Individuals, InitialState, Permutation)),
 	computeAreaList(Individuals, Permutation, Area-_),
 	%print the optimal permutation with the max reachable area
 	createFirstState(Individuals, [([], ToPlace)]),
 	findall(X, permutation(ToPlace, X), Permutations),
-	maplist(computeAreaList(Individuals), Permutations, PermutationsWithValues),
+	once(maplist(computeAreaList(Individuals), Permutations, PermutationsWithValues)),
 	max_member(Value-MaxPermutation, PermutationsWithValues),
 	write("Max permutation : "), write(MaxPermutation), write(" with area : "), writeln(Value).
 
 %Predicate used to create first state from indiv list
-createFirstState([IndivListHead|_], [([], ToPlace)]):-
-	length(IndivListHead, L),
+createFirstState([IndivListHead|IndivListTail], [([], ToPlace)]):-
+	checkSize([IndivListHead|IndivListTail], L),
 	numlist(1, L, ToPlace).
+
+checkSize([], _).
+checkSize([IndivListHead|IndivListTail], L):-
+	length(IndivListHead, L),
+	checkSize(IndivListTail, L).
 
 generateIndivList(0, _, []).
 generateIndivList(NbIndiv, NbDimensions, IndivList):-
-	NbIndiv > 0,
+	NbIndiv > 0, NbDimensions > 0,
 	NbIndiv1 is NbIndiv - 1,
-	generateIndiv(Indiv, NbDimensions),
+	generateIndiv(NbDimensions, Indiv),
 	IndivList = [Indiv|T],
 	generateIndivList(NbIndiv1, NbDimensions, T).
 
-generateIndiv(Indiv, NbDimensions):-
+generateIndiv(NbDimensions, Indiv):-
 	length(Indiv, NbDimensions),
 	maplist(random(0.0, 1.0), Indiv).
 
@@ -207,8 +212,28 @@ aStar(IndivList, [_-(HeadStatePlaced, HeadStateToPlace)|TailStates], Result):-
 
 :- begin_tests(tests).
 
-test(computeAreaIndiv):-
+test(triangleArea):-
+	triangleArea(1,1,Area), assertion(float(Area)), assertion(Area == 0.5),
+	triangleArea(1,0,Area2), assertion(float(Area2)), assertion(Area2 == 0.0),
+	triangleArea(0.5,0.25,Area3), assertion(float(Area3)), assertion(Area3 == 0.0625).
 
+test(checkSize):-
+	%if size isn't the same for all individuals, returns no solution
+	checkSize([[1,2], [1,2]], L), assertion(L == 2).
+
+test(createFirstState):-
+	createFirstState([[1,1]], State), assertion(State == [([], [1,2])]),
+	createFirstState([[1,1],[1,1]], State2), assertion(State2 == [([], [1,2])]),
+	createFirstState([[1,1,1],[1,1,1]], State3), assertion(State3 == [([], [1,2,3])]).
+
+test(generateIndiv):-
+	once(generateIndiv(2, Indiv)), length(Indiv, NbDimensions), assertion(NbDimensions == 2).
+
+test(generateIndivList):-
+	once(generateIndivList(5,2, IndivList)),
+	length(IndivList, NumberIndivs), assertion(NumberIndivs == 5).
+
+test(computeAreaIndiv):-
 	%Standard test
 	once(computeAreaIndiv([1,1,1,1], [1,2,3,4], Area)),
 	assertion(float(Area)),
@@ -246,5 +271,16 @@ test(computeAreaList):-
 	computeAreaList([[1,1,1,1], [0,1,0,1], [0.5,1,0.5,1], [0,0.5,1,0.5]], [1,2,3], Area3-[1,2,3]),
 	assertion(float(Area3)),
 	assertion(Area3==1.75).
+
+test(sumOverIndivs):-
+
+	sumOverIndivs([[1,0], [1,0], [0.5, 0.25]], 1, Dim1-1),
+	sumOverIndivs([[1,0], [1,0], [0.5, 0.25]], 2, Dim2-2),
+	assertion(float(Dim1)), assertion(float(Dim2)),
+	assertion(Dim1 == 2.5), assertion(Dim2 == 0.25).
+
+test(orderForHeuristic):-
+	orderForHeuristic([[1,1,1,1], [0,1,0,1], [0.5,1,0.5,1], [0,0.5,1,0.5]], [1,2,3,4], ToPlaceOrdered),
+	assertion(ToPlaceOrdered == [1.5-1, 2.5-3, 3.5-2, 3.5-4]).
 
 :- end_tests(tests).
