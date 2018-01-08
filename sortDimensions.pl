@@ -1,6 +1,4 @@
-%How to use : main(NbIndiv, NbDimensions, (Permutation, Area)).
-% or : main(NbIndiv, NbDimensions, Result).
-% example : main(4, 8,(Permutation, Area)).
+%Notable fact : individuals are generated normalized, so we don't divide by the dimension max in the area computation
 
 main(NbIndiv, NbDimensions, (Permutation, Area)):-
 	once(generateIndivList(NbIndiv, NbDimensions, Individuals)),
