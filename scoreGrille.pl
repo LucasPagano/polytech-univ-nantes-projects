@@ -1,3 +1,10 @@
+/*
+ Lucas Pagano    Mon Jan 8 17:56:17 2018 +0100   moved tests to tests file
+ Lucas Pagano    Mon Jan 8 10:14:15 2018 +0100   added unit tests and change delete to select not to delete multiple occurencies
+ Yulin Chai      Sat Jan 6 23:10:06 2018 +0800   Calculate the score for a grille
+ Yulin Chai      Sat Jan 6 22:44:38 2018 +0800   yulin
+*/
+
 %Only for squares
 %define the size of the grille
 grilleSize(NbIndiv,Size):-

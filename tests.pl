@@ -1,3 +1,7 @@
+/*
+Lucas Pagano    Mon Jan 8 17:56:17 2018 +0100   moved tests to tests file
+*/
+
 :- begin_tests(tests).
 
 %sortDimensions tests
@@ -7,8 +11,10 @@ test(triangleArea):-
 	triangleArea(0.5,0.25,Area3), assertion(float(Area3)), assertion(Area3 == 0.0625).
 
 test(checkSize):-
-	%if size isn't the same for all individuals, returns no solution
-	checkSize([[1,2], [1,2]], L), assertion(L == 2).
+	checkSize([[1,2], [1,2]], L), assertion(L == 2),
+
+  %if size isn't the same for all individuals, returns false
+  \+ checkSize([[1,1,1], [1,1]], _).
 
 test(createFirstState):-
 	createFirstState([[1,1]], State), assertion(State == [([], [1,2])]),

@@ -1,3 +1,8 @@
+/*
+Lucas Pagano    Mon Jan 8 18:04:46 2018 +0100   added usage instructions
+Lucas Pagano    Mon Jan 8 17:56:53 2018 +0100   added main file
+*/
+
 :- include('sortDimensions.pl').
 :- include('scoreGrille.pl').
 :- include('tests.pl').

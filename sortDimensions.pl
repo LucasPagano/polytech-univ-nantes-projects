@@ -1,3 +1,20 @@
+/*
+ Lucas Pagano    Mon Jan 8 23:14:12 2018 +0100   added postconditions and preconditions
+ Lucas Pagano    Mon Jan 8 19:39:29 2018 +0100   added possibility to submit list to main and mainWithBest
+ Lucas Pagano    Mon Jan 8 17:56:17 2018 +0100   moved tests to tests file
+ Lucas Pagano    Sun Jan 7 23:29:09 2018 +0100   added unit tests and checks in predicates
+ Lucas Pagano    Mon Jan 1 16:11:05 2018 +0100   changed the dimension to pick in ToPlaceOrdered for last triangle in StateValue
+ Lucas Pagano    Mon Jan 1 16:06:35 2018 +0100   added unit tests
+ Lucas Pagano    Sun Dec 31 05:10:25 2017 +0100  added mainWithBest, which explores all solutions and gives the best one, only use to debug
+ Lucas Pagano    Sun Dec 31 05:09:16 2017 +0100  changed heuristic to take last triangle into account and changed way of setting first dimension
+ Lucas Pagano    Wed Dec 27 02:13:33 2017 +0100  change A* initialzation thanks to fix, now we only need to choose one dimension to start. Changed main to print area as well
+ Lucas Pagano    Wed Dec 27 02:03:09 2017 +0100  fix area computation to take last triangle into account only when the permutation is the same same as the individuals
+ Lucas Pagano    Wed Dec 27 00:19:17 2017 +0100  used max_member insead of keysort
+ Lucas Pagano    Wed Dec 27 00:05:03 2017 +0100  added heuristic in A* and main
+ Lucas Pagano    Tue Dec 26 00:16:04 2017 +0100  finished A* algorithm and added initialState generation
+ Lucas Pagano    Mon Dec 18 18:04:44 2017 +0100  add compute area and generate indiv lists functions
+*/
+
 %Notable fact : individuals are generated normalized, so we don't divide by the dimension max in the area computation
 
 /**
