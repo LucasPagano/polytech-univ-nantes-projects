@@ -94,7 +94,7 @@ minDifferList(NbMin,List,MinList):-
 	length(List,L), L > 0, NbMin > 0,
 	min_member(Min,List),
 	NbMin1 is NbMin -1,
-	delete(List,Min,NewList),
+	select(Min,List,NewList),
 	MinList = [Min|TailMinList],
 	minDifferList(NbMin1,NewList,TailMinList).
 
@@ -116,16 +116,13 @@ getIndiv([],[]).
 getIndiv([Differ-Indiv|TailList],IndivList):-
 	length([Differ-Indiv|TailList],L),L>0,
 	IndivList = [Indiv|TailIndiv],
-	delete([Differ-Indiv|TailList],Differ-Indiv,NewList),
+	select(Differ-Indiv, [Differ-Indiv|TailList] ,NewList),
 	getIndiv(NewList,TailIndiv).
 
 
 %if the indiv is placed at the right place, count 1 point.
 point(Indiv,IndivList,Point):-
-	member(Indiv,IndivList) -> Point is 1.
-point(Indiv,IndivList,Point):-
-	not(member(Indiv,IndivList)) -> Point is 0.
-
+	member(Indiv,IndivList) -> Point is 1 ; Point is 0.
 
 %calculate the score for a situation
 scoreVoisin(_,_,[],_,0).
@@ -159,18 +156,9 @@ score(Grille,GrilleSize,[HeadCase-HeadIndiv|TailGrille],IndivList,NbIndiv,Score)
 	score(Grille,GrilleSize,TailGrille,IndivList,Nb1,TailS),
 	Score is S+TailS.
 
-generateGrille(IndivList,GrilleList):-
-	findall(List,permutation(List,IndivList),GrilleList).
-
-list([[1,3],[4,4],[1,1],[2,3],[7,5],[10,5],[6,6],[7,27],[18,8]]).
-
-
 %test
 main():-
-	generateIndivList(9,2,IndivList),
-	generateGrille(IndivList,GrilleList),
-	write(GrilleList),
-%	list(IndivList),
+	generateIndivList(4, 2,IndivList),
 	write("IndivList = "), write(IndivList), nl,
 	length(IndivList,NbIndiv),
 	write("NbIndiv = "), write(NbIndiv), nl,
@@ -194,3 +182,54 @@ main():-
 	write("Score for case1 = "),write(S), nl,
 	score(Grille,Size,Grille,IndivList,NbIndiv,Score),
 	write("Score is = "),write(Score).
+
+
+:- begin_tests(tests).
+
+test(cases4):-
+	%Standard case
+	cases4([1,1],Cases, 4),
+	assertion(Cases = [[0,1],[2,1],[1,0],[1,2]]),
+
+	%Border cases
+	cases4([3,3],Cases2, 4),
+	assertion(Cases2 = [[2,3],[3,2]]),
+
+	cases4([0,0],Cases3, 4),
+	assertion(Cases3 = [[1,0],[0,1]]),
+
+	%Out of range
+	cases4([0,0],Cases4, 1),
+	assertion(Cases4 = []).
+
+test(cases8):-
+	%Standard case
+	cases8([1,1],Cases, 4),
+	assertion(Cases = [[0,0],[0,2],[2,0],[2,2]]),
+
+	%Border cases
+	cases8([3,3],Cases2, 4),
+	assertion(Cases2 = [[2,2]]),
+
+	cases8([0,0],Cases3, 4),
+	assertion(Cases3 = [[1,1]]),
+
+	%Out of range
+	cases8([0,0],Cases4, 1),
+	assertion(Cases4 = []).
+
+test(voisins4):-
+	IndivList = [[1,1,1,1], [1,1,1,0], [1,1,0,1], [1,0,1,1], [0,1,1,1], [0,1,0,1], [0,0.5,1,0.5]],
+	voisins4([1,1,1,1], IndivList, Voisins),
+	assertion(Voisins == [[0,1,1,1],[1,0,1,1],[1,1,0,1],[1,1,1,0]]),
+
+	%Duplicate elements correctly handled
+	IndivList2 = [[1,1,1,1], [1,1,1,1], [1,1,1,1], [1,1,1,1], [0,1,1,1], [0,1,0,1], [0,0.5,1,0.5]],
+	voisins4([1,1,1,1], IndivList2, Voisins2),
+	assertion(Voisins2 == [[1,1,1,1],[1,1,1,1],[1,1,1,1],[0,1,1,1]]),
+
+	IndivList = [[1,1,1,1], [1,1,1,0], [1,1,0,1], [1,0,1,1], [0,1,1,1], [0,1,0,1], [0,0.5,1,0.5]],
+	voisins4([0, 0.5, 1, 0.5], IndivList, Voisins3),
+	assertion(Voisins3 == [[0,1,1,1],[0,1,0,1],[1,0,1,1],[1,1,1,0]]).
+
+:- end_tests(tests).
