@@ -9,10 +9,32 @@ main(NbIndiv, NbDimensions, (Permutation, Area)):-
 	once(aStar(Individuals, InitialState, Permutation)),
 	computeAreaList(Individuals, Permutation, Area-_).
 
+main(Individuals, (Permutation, Area)):-
+	createFirstState(Individuals, InitialState),
+	nth1(1, InitialState, PrintInitialState),
+	write("Individuals = "), write(Individuals), nl,
+	write("Initial state : ("), write(PrintInitialState), write(")"), nl,
+	once(aStar(Individuals, InitialState, Permutation)),
+	computeAreaList(Individuals, Permutation, Area-_).
+
 %Only use this for debug as it computes all permutations
 mainWithBest(NbIndiv, NbDimensions, (Permutation, Area)):-
 	%Can't call main here because the indivuals generation is random, so we must use the same
 	once(generateIndivList(NbIndiv, NbDimensions, Individuals)),
+	createFirstState(Individuals, InitialState),
+	nth1(1, InitialState, PrintInitialState),
+	write("Individuals = "), write(Individuals), nl,
+	write("Initial state : ("), write(PrintInitialState), write(")"), nl,
+	once(aStar(Individuals, InitialState, Permutation)),
+	computeAreaList(Individuals, Permutation, Area-_),
+	%print the optimal permutation with the max reachable area
+	createFirstState(Individuals, [([], ToPlace)]),
+	findall(X, permutation(ToPlace, X), Permutations),
+	once(maplist(computeAreaList(Individuals), Permutations, PermutationsWithValues)),
+	max_member(Value-MaxPermutation, PermutationsWithValues),
+	write("Max permutation : "), write(MaxPermutation), write(" with area : "), writeln(Value).
+
+mainWithBest(Individuals, (Permutation, Area)):-
 	createFirstState(Individuals, InitialState),
 	nth1(1, InitialState, PrintInitialState),
 	write("Individuals = "), write(Individuals), nl,
