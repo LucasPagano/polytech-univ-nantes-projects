@@ -1,5 +1,12 @@
 %Notable fact : individuals are generated normalized, so we don't divide by the dimension max in the area computation
 
+/**
+* NbIndiv : int
+* NbDimensions : int
+*
+* Permutation : list of ints
+* Area : float
+*/
 main(NbIndiv, NbDimensions, (Permutation, Area)):-
 	once(generateIndivList(NbIndiv, NbDimensions, Individuals)),
 	createFirstState(Individuals, InitialState),
@@ -9,6 +16,12 @@ main(NbIndiv, NbDimensions, (Permutation, Area)):-
 	once(aStar(Individuals, InitialState, Permutation)),
 	computeAreaList(Individuals, Permutation, Area-_).
 
+/**
+* Individuals : list of lists of ints
+*
+* Permutation : list of ints
+* Area : float
+*/
 main(Individuals, (Permutation, Area)):-
 	createFirstState(Individuals, InitialState),
 	nth1(1, InitialState, PrintInitialState),
@@ -17,6 +30,14 @@ main(Individuals, (Permutation, Area)):-
 	once(aStar(Individuals, InitialState, Permutation)),
 	computeAreaList(Individuals, Permutation, Area-_).
 
+
+/**
+* NbIndiv : int
+* NbDimensions : int
+*
+* Permutation : list of ints
+* Area : float
+*/
 %Only use this for debug as it computes all permutations
 mainWithBest(NbIndiv, NbDimensions, (Permutation, Area)):-
 	%Can't call main here because the indivuals generation is random, so we must use the same
@@ -34,6 +55,12 @@ mainWithBest(NbIndiv, NbDimensions, (Permutation, Area)):-
 	max_member(Value-MaxPermutation, PermutationsWithValues),
 	write("Max permutation : "), write(MaxPermutation), write(" with area : "), writeln(Value).
 
+/**
+* Individuals : list of lists of floats
+*
+* Permutation : list of ints
+* Area : float
+*/
 mainWithBest(Individuals, (Permutation, Area)):-
 	createFirstState(Individuals, InitialState),
 	nth1(1, InitialState, PrintInitialState),
@@ -53,11 +80,18 @@ createFirstState([IndivListHead|IndivListTail], [([], ToPlace)]):-
 	checkSize([IndivListHead|IndivListTail], L),
 	numlist(1, L, ToPlace).
 
+%Predicate used to check that size of all individuals is the same
 checkSize([], _).
 checkSize([IndivListHead|IndivListTail], L):-
 	length(IndivListHead, L),
 	checkSize(IndivListTail, L).
 
+/**
+* NbIndiv : int
+* NbDimensions : int
+*
+* IndivList : list of lists of floats
+*/
 generateIndivList(0, _, []).
 generateIndivList(NbIndiv, NbDimensions, IndivList):-
 	NbIndiv > 0, NbDimensions > 0,
@@ -66,10 +100,22 @@ generateIndivList(NbIndiv, NbDimensions, IndivList):-
 	IndivList = [Indiv|T],
 	generateIndivList(NbIndiv1, NbDimensions, T).
 
+/**
+* NbIndiv : int
+* NbDimensions : int
+*
+* Indiv : list of floats
+*/
 generateIndiv(NbDimensions, Indiv):-
 	length(Indiv, NbDimensions),
 	maplist(random(0.0, 1.0), Indiv).
 
+/**
+* IndivList : list of lists of floats
+* Permutation : list of ints
+*
+* Area : float
+*/
 computeAreaList([], Permutation, 0-Permutation).
 computeAreaList([FirstIndiv|TailIndiv], Permutation, Area-Permutation):-
 	%if permutation is same size as individuals, we must count the last triangle, else we shouldn't
@@ -78,6 +124,12 @@ computeAreaList([FirstIndiv|TailIndiv], Permutation, Area-Permutation):-
 	computeAreaList(TailIndiv, Permutation, AreaList-_),
 	Area is AreaList + AreaIndiv.
 
+/**
+* Indiv : list of floats
+* [FirstPi, SecondPi|TailPi] : permutation, list of ints
+*
+* Area : float
+*/
 %Not counting the triangle between last dimension and first one
 computeAreaIndivWithoutLast(_, [], 0).
 computeAreaIndivWithoutLast(Indiv, [FirstPi, SecondPi|TailPi], Area):-
@@ -88,11 +140,23 @@ computeAreaIndivWithoutLast(Indiv, [FirstPi, SecondPi|TailPi], Area):-
 	computeAreaIndivWithoutLast(Indiv, [SecondPi|TailPi], AreaOfTail),
 	Area is Triangle + AreaOfTail.
 
+/**
+* Indiv : list of floats
+* [FirstPi, SecondPi] : list of ints, of size 2
+*
+* Area : float
+*/
 computeAreaIndivWithoutLast(Indiv, [FirstPi, SecondPi], Area):-
 	nth1(FirstPi, Indiv, Dim1),
 	nth1(SecondPi, Indiv, Dim2),
 	triangleArea(Dim1, Dim2, Area).
 
+/**
+* Indiv : list of floats
+* [FirstPi, SecondPi|TailPi] : permutation, list of ints
+*
+* Area : float
+*/
 %Counting the triangle between last dimension and first one
 computeAreaIndiv(Indiv, [FirstPi, SecondPi|TailPi], Area):-
 	nth1(FirstPi, Indiv, ValueOfFirst),
@@ -118,17 +182,37 @@ hiddenComputeAreaIndiv(Indiv, [FirstPi, SecondPi, TailPi], VeryFirst, Area):-
 	triangleArea(DimTail, VeryFirst, Triangle3),
 	Area is Triangle + Triangle2 + Triangle3.
 
+/**
+* Dimension1 : float
+* Dimension2 : float
+*
+* Area : float
+*/
 triangleArea(Dimension1, Dimension2, Area):-
 	Dimension1 =< 1, Dimension1 >=0,
 	Dimension2 =< 1, Dimension2 >=0,
 	Area is 0.5*Dimension1*Dimension2.
 
+/**
+* Elem : element member of FromList
+* FromList : list which contains Elem
+* ToList : list
+*
+* NewFromList : Fromlist without Elem
+* NewToList : ToList with Elem at the end
+*/
 set(Elem, FromList, ToList, NewFromList, NewToList):-
 	member(Elem, FromList),
-	delete(FromList, Elem, NewFromList),
+	select(Elem, FromList, NewFromList),
 	%We put elem in second place because we want to append at end of list
 	append(ToList, [Elem], NewToList).
 
+/**
+* [FirstIndiv|OtherIndivs] : list of lists of floats
+* Dimension : int
+*
+* R : float
+*/
 %Sum the values of the n'th dimension over all individuals
 sumOverIndivs([], Dimension, 0-Dimension).
 sumOverIndivs([FirstIndiv|OtherIndivs], Dimension, R-Dimension):-
@@ -136,6 +220,14 @@ sumOverIndivs([FirstIndiv|OtherIndivs], Dimension, R-Dimension):-
 	sumOverIndivs(OtherIndivs, Dimension, Result2-_),
 	R is Result + Result2.
 
+/**
+* [FirstIndiv|OtherIndivs] : list of lists of floats
+* FirstDimension : int
+* SecondDimension : int
+*
+* R : float
+*/
+%Sum of triangles between FirstDimension and Second of all individuals
 multForAllIndivs([], _, _, 0).
 multForAllIndivs([FirstIndiv|OtherIndivs], FirstDimension, SecondDimension, R):-
 	nth1(FirstDimension, FirstIndiv, FirstDimensionValue),
@@ -208,7 +300,7 @@ aStar(IndivList, [(HeadStatePlaced, HeadStateToPlace)|_], Result):-
 	findall(P, (set(_, NewToPlace, NewPlaced, NewFromList, NewToList), P = (NewToList, NewFromList)), Children),
 	maplist(stateValue(IndivList), Children, StateValues),
 	max_member(BestState, StateValues),
-	delete(StateValues, BestState, StateValuesWithoutBest),
+	select(BestState, StateValues, StateValuesWithoutBest),
 	append([BestState], StateValuesWithoutBest, StateValuesBestFirstPlace),
 	aStar(IndivList, StateValuesBestFirstPlace, Result).
 
@@ -225,6 +317,6 @@ aStar(IndivList, [_-(HeadStatePlaced, HeadStateToPlace)|TailStates], Result):-
 	%get the max value
 	max_member(BestState, NewStates),
 	%add it at the beginning
-	delete(NewStates, BestState, NewStatesWithoutBest),
+	select(BestState, NewStates, NewStatesWithoutBest),
 	append([BestState], NewStatesWithoutBest, NewStatesBestFirstPlace),
 	aStar(IndivList, NewStatesBestFirstPlace, Result).
