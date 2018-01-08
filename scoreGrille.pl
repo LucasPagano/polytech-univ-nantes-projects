@@ -3,18 +3,6 @@
 grilleSize(NbIndiv,Size):-
 	Size is ceiling(sqrt(NbIndiv)).
 
-generateIndivList(0, _, []).
-generateIndivList(NbIndiv, NbDimensions, IndivList):-
-	NbIndiv > 0,
-	NbIndiv1 is NbIndiv - 1,
-	generateIndiv(Indiv, NbDimensions),
-	IndivList = [Indiv|T],
-	generateIndivList(NbIndiv1, NbDimensions, T).
-
-generateIndiv(Indiv, NbDimensions):-
-	length(Indiv, NbDimensions),
-	maplist(random(0.0, 1.0), Indiv).
-
 %put all individuals into the grille
 g([],_,0,_,[]).
 g([HeadIndiv|TailIndiv],NbIndiv,Nb,GrilleSize,Grille):-
@@ -156,80 +144,12 @@ score(Grille,GrilleSize,[HeadCase-HeadIndiv|TailGrille],IndivList,NbIndiv,Score)
 	score(Grille,GrilleSize,TailGrille,IndivList,Nb1,TailS),
 	Score is S+TailS.
 
-%test
 main():-
-	generateIndivList(4, 2,IndivList),
+	generateIndivList(9, 3,IndivList),
 	write("IndivList = "), write(IndivList), nl,
 	length(IndivList,NbIndiv),
-	write("NbIndiv = "), write(NbIndiv), nl,
 	grilleSize(NbIndiv,Size),
-	write("GrilleSize "), write(Size), nl,
 	g(IndivList,NbIndiv,NbIndiv,Size,Grille),
 	write("Grille = "), write(Grille), nl,
-	cases4([0,0],Cases4,Size),
-	write("Neighbor cases for [0,0] = "), write(Cases4), nl,
-        cases8([0,0],Cases8,Size),
-	write("Diag cases for [0,0] = "), write(Cases8), nl,
-        findIndiv([0,0],Grille,Indiv),
-	write("Indiv at [0,0] = "), write(Indiv), nl,
-        voisins4(Indiv,IndivList,Voisins4),
-	write("D-Voisins4 for Indiv = "), write(Voisins4), nl,
-        voisins8(Indiv,IndivList,Voisins8),
-	write("D-Voisins4 for Indiv = "), write(Voisins8), nl,
-	scoreVoisin(Grille,Indiv,Cases4,Voisins4,S1),
-	write("Score for voisin4 = "),write(S1), nl,
-        scoreCase(Grille,Size,[0,0],Indiv,IndivList,S),
-	write("Score for case1 = "),write(S), nl,
 	score(Grille,Size,Grille,IndivList,NbIndiv,Score),
 	write("Score is = "),write(Score).
-
-
-:- begin_tests(tests).
-
-test(cases4):-
-	%Standard case
-	cases4([1,1],Cases, 4),
-	assertion(Cases = [[0,1],[2,1],[1,0],[1,2]]),
-
-	%Border cases
-	cases4([3,3],Cases2, 4),
-	assertion(Cases2 = [[2,3],[3,2]]),
-
-	cases4([0,0],Cases3, 4),
-	assertion(Cases3 = [[1,0],[0,1]]),
-
-	%Out of range
-	cases4([0,0],Cases4, 1),
-	assertion(Cases4 = []).
-
-test(cases8):-
-	%Standard case
-	cases8([1,1],Cases, 4),
-	assertion(Cases = [[0,0],[0,2],[2,0],[2,2]]),
-
-	%Border cases
-	cases8([3,3],Cases2, 4),
-	assertion(Cases2 = [[2,2]]),
-
-	cases8([0,0],Cases3, 4),
-	assertion(Cases3 = [[1,1]]),
-
-	%Out of range
-	cases8([0,0],Cases4, 1),
-	assertion(Cases4 = []).
-
-test(voisins4):-
-	IndivList = [[1,1,1,1], [1,1,1,0], [1,1,0,1], [1,0,1,1], [0,1,1,1], [0,1,0,1], [0,0.5,1,0.5]],
-	voisins4([1,1,1,1], IndivList, Voisins),
-	assertion(Voisins == [[0,1,1,1],[1,0,1,1],[1,1,0,1],[1,1,1,0]]),
-
-	%Duplicate elements correctly handled
-	IndivList2 = [[1,1,1,1], [1,1,1,1], [1,1,1,1], [1,1,1,1], [0,1,1,1], [0,1,0,1], [0,0.5,1,0.5]],
-	voisins4([1,1,1,1], IndivList2, Voisins2),
-	assertion(Voisins2 == [[1,1,1,1],[1,1,1,1],[1,1,1,1],[0,1,1,1]]),
-
-	IndivList = [[1,1,1,1], [1,1,1,0], [1,1,0,1], [1,0,1,1], [0,1,1,1], [0,1,0,1], [0,0.5,1,0.5]],
-	voisins4([0, 0.5, 1, 0.5], IndivList, Voisins3),
-	assertion(Voisins3 == [[0,1,1,1],[0,1,0,1],[1,0,1,1],[1,1,1,0]]).
-
-:- end_tests(tests).
