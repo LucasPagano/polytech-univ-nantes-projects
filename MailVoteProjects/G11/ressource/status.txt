@@ -1,0 +1,11 @@
+Dear USERTYPE,
+This is the status of your selected run:
+* Run id : IDRUN
+* Description : 
+DESCRIPTION
+________________________________________________
+CHOICE
+
+You have TOKENS tokens place on : PLACECLIENT
+TMPDECISION ALLCLIENT 
+Best regards.
