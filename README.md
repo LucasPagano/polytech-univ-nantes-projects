@@ -19,7 +19,7 @@ Coursework and TPs from the 3rd year (display name on GitLab: *3A - third year*;
 - **Web sémantique** — suicide-rates dataset materials
 
 ### [`Stage5A/`](./Stage5A) — 5th year internship report (MyScript)
-End-of-studies internship at **MyScript** (Nantes): *Synthèse d'écriture cursive* — cursive handwriting synthesis adapted to a writer’s style. Includes LaTeX sources (`rapport.tex`), bibliography, figures, intermediate report, and final PDF. Academic tutor: Julien Blanchard; company tutor: Robin Mélinand. *(The PDF footer marks the document as confidential.)*
+End-of-studies internship at **MyScript** (Nantes): *Synthèse d'écriture cursive* — cursive handwriting synthesis adapted to a writer’s style. Includes LaTeX sources (`rapport.tex`), bibliography, figures, intermediate report, and final PDF. Academic tutor: Julien Blanchard; company tutor: Robin Mélinand.
 
 ### [`IA-Prolog/`](./IA-Prolog) — AI mini-project (Prolog)
 2017–2018 AI mini-project in **Prolog**: A\* search to find a good dimension permutation for multi-dimensional individuals (minimize area), plus a grid-scoring demo and unit tests.
