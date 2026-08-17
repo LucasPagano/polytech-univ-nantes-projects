@@ -1,6 +1,6 @@
 # Polytech / Université de Nantes — school projects
 
-Projects migrated from [GitLab univ-nantes](https://gitlab.univ-nantes.fr/E144754R) (account `E144754R`, Polytech Nantes). Commit history from each original repository is preserved.
+Most projects migrated from [GitLab univ-nantes](https://gitlab.univ-nantes.fr/E144754R) (account `E144754R`, Polytech Nantes). Commit history from each GitLab repository is preserved. `5A/` was recovered from Dropbox (no Git history).
 
 ## Projects
 
@@ -9,6 +9,14 @@ Coursework and TPs from the 3rd year (display name on GitLab: *3A - third year*;
 
 ### [`4A/`](./4A) — 4th year C++ labs
 4th-year **C++** practicals (TP1–TP5): classes, strings, matrices, templates, and related exercises (Visual Studio solutions).
+
+### [`5A/`](./5A) — 5th year data / AI coursework
+5th-year labs and projects (with Chai Yulin on several TPs), recovered from Dropbox:
+
+- **Analyse prédictive** — scoring & validation notebooks (SVM, trees, MLP, logistic regression, Naive Bayes; ROC/AUC, confusion matrices)
+- **Analyse de traces numériques** — sequence / subsequence mining on event traces (Yahoo Finance data)
+- **Analyse et fouille de données** — playlist/tracks data project + Qlik Sense intro
+- **Web sémantique** — suicide-rates dataset materials
 
 ### [`IA-Prolog/`](./IA-Prolog) — AI mini-project (Prolog)
 2017–2018 AI mini-project in **Prolog**: A\* search to find a good dimension permutation for multi-dimensional individuals (minimize area), plus a grid-scoring demo and unit tests.
@@ -24,11 +32,12 @@ C project: **Dice Wars**–style game with map/graph, dice combat, **SDL** UI, a
 
 ## Source
 
-| Folder | Original GitLab project |
-|--------|-------------------------|
-| `3A/` | `E144754R/My-awesome-projects` |
-| `4A/` | `E144754R/4A` |
-| `IA-Prolog/` | `E144754R/IA-Prolog` |
-| `MailVote/` | `E144754R/MailVote` |
-| `MailVoteProjects/` | `E144754R/MailVoteProjects` |
-| `ProjetC/` | `E144754R/ProjetC` |
+| Folder | Origin |
+|--------|--------|
+| `3A/` | GitLab `E144754R/My-awesome-projects` |
+| `4A/` | GitLab `E144754R/4A` |
+| `5A/` | Dropbox backup (`5a.zip`) |
+| `IA-Prolog/` | GitLab `E144754R/IA-Prolog` |
+| `MailVote/` | GitLab `E144754R/MailVote` |
+| `MailVoteProjects/` | GitLab `E144754R/MailVoteProjects` |
+| `ProjetC/` | GitLab `E144754R/ProjetC` |
