@@ -1,6 +1,6 @@
 # Polytech / Université de Nantes — school projects
 
-Most projects migrated from [GitLab univ-nantes](https://gitlab.univ-nantes.fr/E144754R) (account `E144754R`, Polytech Nantes). Commit history from each GitLab repository is preserved. `5A/` was recovered from Dropbox (no Git history).
+Most projects migrated from [GitLab univ-nantes](https://gitlab.univ-nantes.fr/E144754R) (account `E144754R`, Polytech Nantes). Commit history from each GitLab repository is preserved. `5A/` and `Stage5A/` were recovered from Dropbox (no Git history).
 
 ## Projects
 
@@ -17,6 +17,9 @@ Coursework and TPs from the 3rd year (display name on GitLab: *3A - third year*;
 - **Analyse de traces numériques** — sequence / subsequence mining on event traces (Yahoo Finance data)
 - **Analyse et fouille de données** — playlist/tracks data project + Qlik Sense intro
 - **Web sémantique** — suicide-rates dataset materials
+
+### [`Stage5A/`](./Stage5A) — 5th year internship (MyScript)
+Figures and bibliography from the end-of-studies internship at **MyScript** (*Synthèse d'écriture cursive*). The confidential report PDFs and LaTeX source are not included.
 
 ### [`IA-Prolog/`](./IA-Prolog) — AI mini-project (Prolog)
 2017–2018 AI mini-project in **Prolog**: A\* search to find a good dimension permutation for multi-dimensional individuals (minimize area), plus a grid-scoring demo and unit tests.
@@ -37,6 +40,7 @@ C project: **Dice Wars**–style game with map/graph, dice combat, **SDL** UI, a
 | `3A/` | GitLab `E144754R/My-awesome-projects` |
 | `4A/` | GitLab `E144754R/4A` |
 | `5A/` | Dropbox backup (`5a.zip`) |
+| `Stage5A/` | Dropbox backup (`Stage5A.zip`; confidential report omitted) |
 | `IA-Prolog/` | GitLab `E144754R/IA-Prolog` |
 | `MailVote/` | GitLab `E144754R/MailVote` |
 | `MailVoteProjects/` | GitLab `E144754R/MailVoteProjects` |
