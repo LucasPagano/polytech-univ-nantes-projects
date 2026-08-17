@@ -1,0 +1,23 @@
+package liste_chainee;
+
+import java.util.Iterator;
+
+public class Test {
+
+	public static int longueur(Liste l) {
+		int cpt = 0;
+
+		for (Iterator<Integer> it = new ListeIter(l); it.hasNext(); it.next()) {
+			cpt++;
+		}
+		return cpt;
+	}
+	
+	public static int longueur2(Liste l){
+		int cpt = 0;
+		for (Integer elem : l){
+			cpt++;
+		}	
+		return cpt;
+	}
+}

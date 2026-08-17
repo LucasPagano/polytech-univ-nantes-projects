@@ -1,0 +1,14 @@
+{
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-cached": "^1.1.1",
+    "gulp-eslint": "^3.0.1",
+    "gulp-watch": "^4.3.11"
+  },
+  "dependencies": {
+    "object.entries": "^1.0.4"
+  },
+  "scripts": {
+    "start": "gulp"
+  }
+}

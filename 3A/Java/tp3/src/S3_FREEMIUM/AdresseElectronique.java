@@ -1,0 +1,46 @@
+package S3_FREEMIUM;
+
+public class AdresseElectronique {
+	public String gauche;
+	public String droit;
+
+	public AdresseElectronique(String gauche, String droit) {
+		this.gauche = gauche;
+		this.droit = droit;
+	}
+
+	@Override
+	public String toString() {
+		return gauche+"@"+droit;
+	}
+
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof AdresseElectronique))
+			return false;
+
+		AdresseElectronique other = (AdresseElectronique) obj;
+		if (droit == null) {
+			if (other.droit != null)
+				return false;
+		} else if (!droit.equals(other.droit))
+			return false;
+		if (gauche == null) {
+			if (other.gauche != null)
+				return false;
+		} else if (!gauche.equals(other.gauche))
+			return false;
+
+		return true;
+	}
+
+}

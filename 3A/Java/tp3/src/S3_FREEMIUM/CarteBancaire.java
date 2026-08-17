@@ -1,0 +1,21 @@
+package S3_FREEMIUM;
+
+public class CarteBancaire{
+
+    int numero;
+    int date;
+    int pictogramme;
+
+    public CarteBancaire(int numero, int date, int pictogramme){
+	this.numero = numero ;
+	this.date = date ;
+	this.pictogramme = pictogramme ;
+    }
+
+    public boolean paye(int montant){
+	System.out.println ("Carte numero " + this.numero + " : debit " + montant +".") ;
+	return true ;
+    }
+
+}
+

@@ -1,0 +1,36 @@
+**
+** Solution de principe � la synchronisation de 2 processus 
+** � l'aide d'un s�maphore d'exclusion mutuelle
+**
+
+
+** D�claration des variales globales
+Var 
+Entier compteur := 0;
+
+Semaphore S := 1;
+
+
+
+
+** Fonction principale des processus
+Processus Processus_princ;
+
+	while true do 
+	begin
+		P(S)
+		compteur := compteur + 1;
+		V(S)
+	end
+
+
+
+** D�marrage des 2 processus avec Section critique et EM par s�maphore S
+begin
+	parbegin
+		Processus_princ;
+		Processus_princ;
+	parend
+end
+
+
