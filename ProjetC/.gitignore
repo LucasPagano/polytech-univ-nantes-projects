@@ -1,0 +1,15 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+#IntelliJ
+.idea*
+
+#Clion
+cmake-build-debug
+
+#object files
+*.o
+
+dicewars
